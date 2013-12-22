@@ -17,35 +17,27 @@ JilParser.prototype.removeComments = function(jilText) {
     return jilText.replace(commentRegexp, "").trim();
 }
 
-JilParser.prototype.convertToJson = function(jilText) {
-    var resultText = "{\n";
+JilParser.prototype.parse = function(jilText) {
+    jilText = this.removeComments(jilText);
+    
     var reg = new RegExp(/^\s*\w+:.*$/gm);
     
+    var currentJob = null;
+    var result = [];
     var match;
-    var firstMatch = true;
     while((match = reg.exec(jilText)) !== null) {
-        var line = match[0].replace(/\"/g, "\\\"").trim(); // Escape quotes
+        var line = match[0].trim(); // Escape quotes
         var propName = line.match(/\w+:/)[0].replace(":", "");
         var propValue = line.replace(/\w+:\s*/, "").trim();
-        var newText = "";
+        
         if ($.inArray(propName, this.jobStartTags) >= 0) {
-            var closingBracket = "";
-            if (firstMatch) {
-                firstMatch = false;
-            } else {
-                closingBracket = "},\n";
-            }
-            newText = closingBracket + this.quote(propValue) + ": " + "{\n";
-        }
-        else {
-            newText = this.quote(propName) + ': ' + this.quote(propValue) + ',\n';
+            currentJob = {name: propValue};
+            result.push(currentJob);
         }
         
-        resultText = resultText + newText;
+        currentJob[propName] = propValue;
     }
-
-    resultText = resultText.trim() + "\n}}";
-    return resultText;
+    return result;
 }
 
 JilParser.prototype.quote = function(str) {

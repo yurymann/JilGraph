@@ -20,9 +20,23 @@
                     $("#removeCommentsResult").text().trim());
             });        
 
-            QUnit.test( "convertToJson", function( assert ) {
-                assert.equal( jilParser.convertToJson($("#removeCommentsResult").text()), 
-                    $("#quoteValuesResult").text().trim());
+            QUnit.test( "parse", function( assert ) {
+                var expected =
+                [
+                  {
+                    "insert_job": "box1",
+                    "job_type": "b",
+                    "name": "box1"
+                  },
+                  {
+                    "command": 'start ""',
+                    "insert_job": "job1_2",
+                    "job_type": "c",
+                    "name": "job1_2"
+                  }
+                ];
+                assert.deepEqual( jilParser.parse($("#testJil1").text()), 
+                    expected);
             });
             
             QUnit.test("addJobDiv", function( assert ) {
@@ -32,12 +46,6 @@
                 var div = builder.addJobDiv(job);
                 console.log(div);
             });
-
-            var props = jilParser.convertToJson($("#removeCommentsResult").text());
-            //props = '{ "box1": { "job_type": "b", }, "job1_2": { "job_type": "c", "command": "start \\"\\"" }}';
-            var tree;
-            eval("tree =" + props);
-            console.log(tree);
         });
     </script>
 
