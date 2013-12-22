@@ -16,11 +16,11 @@
                 assert.equal( removeComments($("#testJil1").text()), 
                     $("#removeCommentsResult").text().trim());
             });        
-/*            $("#tempResult").text($("#removeCommentsResult").text().trim());
+            $("#tempResult").text($("#removeCommentsResult").text().trim());
             QUnit.test( "quoteValues", function( assert ) {
                 assert.equal( quoteValues($("#removeCommentsResult").text()), 
                     $("#quoteValuesResult").text().trim());
-            });        */
+            });
         });
     </script>
 
@@ -59,18 +59,15 @@ job_type: b
 insert_job: job1_2 
 job_type: c
 command: start ""
-    <code/>
+    </code>
     <hr/>
     <code id="quoteValuesResult">
-insert_job: box1
-job_type: b
-
-
-
-insert_job: job1_2 
-job_type: c
-command: start ""
-    <code/>
+insert_job: "box1",
+job_type: "b",
+insert_job: "job1_2",
+job_type: "c",
+command: "start \"\"",
+    </code>
     <hr/>
     <code id="tempResult" />
 	
