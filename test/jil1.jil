@@ -1,0 +1,36 @@
+/* 
+* Job 1
+*/
+
+insert_job: box1
+job_type: b
+
+insert_job: job1_1
+job_type: c
+box_name: box1
+
+/* Job 1_2 */
+
+insert_job: job1_2
+job_type: c
+box_name: box1
+command: start "/* 'some'thing */"
+condition: s(job1_1)
+
+insert_job: box2
+job_type: b
+
+insert_job: job2_1
+job_type: c
+box_name: box1
+command: start 'seomething "else /* something */ 
+	next line'
+
+insert_job: job2_2
+job_type: c
+box_name: box1
+condition: s(job1_1) and s(box1)
+
+insert_job: job2_3
+job_type: c
+box_name: box1

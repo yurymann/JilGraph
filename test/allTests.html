@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/jilParser.js"></script>
+
+    <link rel="stylesheet" href="../jslib/qunit-1.12.0.css">
+    <script src="../jslib/qunit-1.12.0.js"></script>
+
+    <script type="text/javascript">
+        "use strict";
+        $(document).ready(function() {
+            QUnit.test( "removeComments", function( assert ) {
+                assert.equal( removeComments($("#testJil1").text()), 
+                    $("#removeCommentsResult").text().trim());
+            });        
+/*            $("#tempResult").text($("#removeCommentsResult").text().trim());
+            QUnit.test( "quoteValues", function( assert ) {
+                assert.equal( quoteValues($("#removeCommentsResult").text()), 
+                    $("#quoteValuesResult").text().trim());
+            });        */
+        });
+    </script>
+
+    <style type="text/css">
+        code { white-space: pre; }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    
+    <code id="testJil1">
+/* 
+* Job 1
+*/
+
+insert_job: box1
+job_type: b
+
+/* Job 1_2 */
+
+insert_job: job1_2 /* Another comment */
+job_type: c
+command: start "/* 'some'thing */"
+    </code>
+    <hr/>
+    <code id="removeCommentsResult">
+insert_job: box1
+job_type: b
+
+
+
+insert_job: job1_2 
+job_type: c
+command: start ""
+    <code/>
+    <hr/>
+    <code id="quoteValuesResult">
+insert_job: box1
+job_type: b
+
+
+
+insert_job: job1_2 
+job_type: c
+command: start ""
+    <code/>
+    <hr/>
+    <code id="tempResult" />
+	
+</body>
+</html> 
