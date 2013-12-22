@@ -15,7 +15,7 @@ function removeComments(jilText) {
     return jilText.replace(commentRegexp, "").trim();
 }
 
-function quoteValues(jilText) {
+function convertToJson(jilText) {
     var resultText = "{\n";
     var reg = new RegExp(/^\s*\w+:.*$/gm);
     
@@ -25,22 +25,29 @@ function quoteValues(jilText) {
         var line = match[0].replace(/\"/g, "\\\"").trim(); // Escape quotes
         var propName = line.match(/\w+:/)[0].replace(":", "");
         var propValue = line.replace(/\w+:\s*/, "").trim();
-        
+        var newText = "";
         if ($.inArray(propName, jobStartTags) >= 0) {
             var closingBracket = "";
             if (firstMatch) {
                 firstMatch = false;
             } else {
-                closingBracket = "}\n";
+                closingBracket = "},\n";
             }
-            propName = closingBracket + "{\n" + propName;
+            newText = closingBracket + quote(propValue) + ": " + "{\n";
+        }
+        else {
+            newText = quote(propName) + ': ' + quote(propValue) + ',\n';
         }
         
-        resultText = resultText + propName + ': "' + propValue + '",' + '\n';
+        resultText = resultText + newText;
     }
 
     resultText = resultText.trim() + "\n}}";
     return resultText;
+}
+
+function quote(str) {
+    return '"' + str + '"';
 }
 
 function insertBrackets(jilText) {
