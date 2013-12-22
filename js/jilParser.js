@@ -1,21 +1,23 @@
 "use strict";
 
-var jobStartTags = [
-"insert_job",
-"insert_machine",
-"delete_job",
-];
+function JilParser() {
+    this.jobStartTags = [
+        "insert_job",
+        "insert_machine",
+        "delete_job",
+    ];
+}
 
-function loadJil(jilText) {
+JilParser.prototype.loadJil = function(jilText) {
     var jilTextWithoutComments = removeComments(jilText);
 }
 
-function removeComments(jilText) {
+JilParser.prototype.removeComments = function(jilText) {
     var commentRegexp = new RegExp("/[*]([^*]|[\r\n]|([*]+([^*/]|[\r\n])))*[*]+/", "g");
     return jilText.replace(commentRegexp, "").trim();
 }
 
-function convertToJson(jilText) {
+JilParser.prototype.convertToJson = function(jilText) {
     var resultText = "{\n";
     var reg = new RegExp(/^\s*\w+:.*$/gm);
     
@@ -26,17 +28,17 @@ function convertToJson(jilText) {
         var propName = line.match(/\w+:/)[0].replace(":", "");
         var propValue = line.replace(/\w+:\s*/, "").trim();
         var newText = "";
-        if ($.inArray(propName, jobStartTags) >= 0) {
+        if ($.inArray(propName, this.jobStartTags) >= 0) {
             var closingBracket = "";
             if (firstMatch) {
                 firstMatch = false;
             } else {
                 closingBracket = "},\n";
             }
-            newText = closingBracket + quote(propValue) + ": " + "{\n";
+            newText = closingBracket + this.quote(propValue) + ": " + "{\n";
         }
         else {
-            newText = quote(propName) + ': ' + quote(propValue) + ',\n';
+            newText = this.quote(propName) + ': ' + this.quote(propValue) + ',\n';
         }
         
         resultText = resultText + newText;
@@ -46,11 +48,11 @@ function convertToJson(jilText) {
     return resultText;
 }
 
-function quote(str) {
+JilParser.prototype.quote = function(str) {
     return '"' + str + '"';
 }
 
-function insertBrackets(jilText) {
+JilParser.prototype.insertBrackets = function(jilText) {
     var resultText = "";
     
     return resultText.trim();

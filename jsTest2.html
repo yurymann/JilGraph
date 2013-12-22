@@ -1,83 +1,91 @@
  <head>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
- 	<script type="text/javascript" src="js/jquery.jsPlumb-1.5.4-min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="jslib/jquery.jsPlumb-1.5.4-min.js"></script>
+    <script type="text/javascript" src="js/GraphBuilder.js"></script>
 
-	<style type="text/css">
-		.box {
-			border: 1px solid blue;
-			margin: 10px;
-			padding: 5px;
-			margin-top: 30px;
-		}
-		.job {
-			border: 1px solid green;
-			margin: 10px;
-			padding: 5px;
-			display:inline-block;
-			/*float: left;*/
-		}
-	</style>
+    <style type="text/css">
+        .box {
+            border: 1px solid blue;
+            margin: 10px;
+            padding: 5px;
+            margin-top: 30px;
+        }
+        .job {
+            border: 1px solid green;
+            margin: 10px;
+            padding: 5px;
+            display:inline-block;
+            /*float: left;*/
+        }
+    </style>
 
-  <script type="text/javascript">
-	 "use strict";
-	 
-	 jsPlumb.bind("ready", function() {
-//		jsPlumb.DefaultDragOptions = { cursor: "pointer", zIndex: 2000 };
-		
-		jsPlumb.importDefaults({
-			Container: $("body"),
-			Anchor: "Continuous",
-			PaintStyle: { lineWidth : 2, strokeStyle : "#456"},
-			/*Endpoints: [ [ "Dot", 5 ], [ "Dot", 3 ] ],*/
-			Endpoint: [ "Dot", { radius: 3 } ],
-			EndpointStyles: [
-				{ fillStyle:"#225588" }, 
-				{ fillStyle:"#558822" }
-			  ],
-			Overlays:[ "Arrow", { location: 1 } ],
-		});
-		
-		jsPlumb.connect({ 
-			source:$("#job1_1"), 
-			target:$("#job1_2"),
-		});
-		jsPlumb.connect({ 
-			source:$("#job1_2"), 
-			target:$("#job2_1"),
-		});
-		jsPlumb.connect({ 
-			source:$("#job1_1"), 
-			target:$("#job2_1"),
-		});
-		jsPlumb.connect({ 
-			source:$("#job1_2"), 
-			target:$("#job1_3"),
-		});
+    <script type="text/javascript">
+        "use strict";
+        
+        $( document ).ready(function() {
+            var builder = new GraphBuilder($("#graphContainer1"));
+            builder.addJobDiv();
+        });
+/*     
+     jsPlumb.ready(function() {
+//      jsPlumb.DefaultDragOptions = { cursor: "pointer", zIndex: 2000 };
+        
+        jsPlumb.importDefaults({
+            Container: $("body"),
+            Anchor: "Continuous",
+            PaintStyle: { lineWidth : 2, strokeStyle : "#456"},
+            //Endpoints: [ [ "Dot", 5 ], [ "Dot", 3 ] ],
+            Endpoint: [ "Dot", { radius: 3 } ],
+            EndpointStyles: [
+                { fillStyle:"#225588" }, 
+                { fillStyle:"#558822" }
+              ],
+            Overlays:[ "Arrow", { location: 1 } ],
+        });
+        
+        jsPlumb.connect({ 
+            source:$("#job1_1"), 
+            target:$("#job1_2"),
+        });
+        jsPlumb.connect({ 
+            source:$("#job1_2"), 
+            target:$("#job2_1"),
+        });
+        jsPlumb.connect({ 
+            source:$("#job1_1"), 
+            target:$("#job2_1"),
+        });
+        jsPlumb.connect({ 
+            source:$("#job1_2"), 
+            target:$("#job1_3"),
+        });
      });
+*/
  </script>
  </head>
  <body>
+    <code id="graphContainer1" />
    <div id="box1" class="box">
-		box1
-		<div>
-			<div id="job1_1" class="job">
-				job1_1
-			</div>
-			<div id="job1_2" class="job">
-				job1_2
-			</div>
-		</div>
-		<div>
-			<div id="job1_3" class="job">
-				job1_3
-			</div>
-		</div>
+        box1
+        <div>
+            <div id="job1_1" class="job">
+                job1_1
+            </div>
+            <div id="job1_2" class="job">
+                job1_2
+            </div>
+        </div>
+        <div>
+            <div id="job1_3" class="job">
+                job1_3
+            </div>
+        </div>
    </div>
    <div id="box2" class="box">
-		box2
-		<div id="job2_1" class="job">
-			job2_1
-		</div>
+        box2
+        <div id="job2_1" class="job">
+            job2_1
+        </div>
    </div>
  </body>

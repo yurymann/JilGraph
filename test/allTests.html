@@ -5,6 +5,7 @@
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="../js/jilParser.js"></script>
+    <script type="text/javascript" src="../js/GraphBuilder.js"></script>
 
     <link rel="stylesheet" href="../jslib/qunit-1.12.0.css">
     <script src="../jslib/qunit-1.12.0.js"></script>
@@ -12,21 +13,31 @@
     <script type="text/javascript">
         "use strict";
         $(document).ready(function() {
+            var jilParser = new JilParser();
+            
             QUnit.test( "removeComments", function( assert ) {
-                assert.equal( removeComments($("#testJil1").text()), 
+                assert.equal( jilParser.removeComments($("#testJil1").text()), 
                     $("#removeCommentsResult").text().trim());
             });        
 
             QUnit.test( "convertToJson", function( assert ) {
-                assert.equal( convertToJson($("#removeCommentsResult").text()), 
+                assert.equal( jilParser.convertToJson($("#removeCommentsResult").text()), 
                     $("#quoteValuesResult").text().trim());
             });
             
-            var props = $("#test1").text();//.replace("\\", "\\\\");
+            QUnit.test("addJobDiv", function( assert ) {
+                var job = {job_type: "c"};
+                
+                var builder = new GraphBuilder($("#graphContainer1"));
+                var div = builder.addJobDiv(job);
+                console.log(div);
+            });
+
+            var props = jilParser.convertToJson($("#removeCommentsResult").text());
             //props = '{ "box1": { "job_type": "b", }, "job1_2": { "job_type": "c", "command": "start \\"\\"" }}';
             var tree;
-            //eval("tree =" + props);
-            //console.log(tree);
+            eval("tree =" + props);
+            console.log(tree);
         });
     </script>
 
@@ -89,7 +100,7 @@ command: start ""
 }}
     </code>
     <hr/>
-    <code id="tempResult" />
+    <code id="graphContainer1" />
 	
 </body>
 </html> 
