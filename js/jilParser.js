@@ -33,9 +33,9 @@ JilParser.prototype.parse = function(jilText) {
         if ($.inArray(propName, this.jobStartTags) >= 0) {
             currentJob = {name: propValue};
             result.push(currentJob);
+        } else {
+            currentJob[propName] = propValue;
         }
-        
-        currentJob[propName] = propValue;
     }
     return result;
 }

@@ -7,8 +7,12 @@
 	<script type="text/javascript" src="../js/jilParser.js"></script>
     <script type="text/javascript" src="../js/GraphBuilder.js"></script>
 
+    <!-- QUnit -->
     <link rel="stylesheet" href="../jslib/qunit-1.12.0.css">
     <script src="../jslib/qunit-1.12.0.js"></script>
+    <!-- QUnit -->
+
+    <link rel="stylesheet" href="../css/jilGraph.css">
 
     <script type="text/javascript">
         "use strict";
@@ -24,13 +28,11 @@
                 var expected =
                 [
                   {
-                    "insert_job": "box1",
                     "job_type": "b",
                     "name": "box1"
                   },
                   {
                     "command": 'start ""',
-                    "insert_job": "job1_2",
                     "job_type": "c",
                     "name": "job1_2"
                   }
@@ -39,12 +41,64 @@
                     expected);
             });
             
-            QUnit.test("addJobDiv", function( assert ) {
-                var job = {job_type: "c"};
+            var addJobTest = function( assert, jobType, divClass ) {
+                var job = {name: "job1", job_type: jobType};
                 
-                var builder = new GraphBuilder($("#graphContainer1"));
-                var div = builder.addJobDiv(job);
+                var builder = new GraphBuilder();
+                var div = builder.addJobDiv(job, $("#graphContainer1"));
+                
                 console.log(div);
+                
+                assert.equal(div.id, "div_" + job.name);
+                assert.equal(div.className, divClass);
+                assert.equal(div.innerText, job.name);
+                assert.equal(div.parentElement.id, "graphContainer1");
+            }
+            
+            QUnit.test("addJobDiv - job", function( assert ) {
+                addJobTest(assert, "c", "job");
+            });
+
+            QUnit.test("addJobDiv - box", function( assert ) {
+                addJobTest(assert, "b", "box");
+            });
+
+            QUnit.test("build graph", function( assert ) {
+                var jil =
+                [
+                  {
+                    "name": "job0_1",
+                    "job_type": "c",
+                    "command": 'start ""',
+                  },
+
+                  {
+                    "name": "box1",
+                    "job_type": "b",
+                  },
+                  {
+                    "name": "job1_1",
+                    "job_type": "c",
+                    "command": 'start ""',
+                    "box": "box1"
+                  },
+                  {
+                    "name": "job1_2",
+                    "job_type": "c",
+                    "command": 'start ""',
+                    "box": "box1",
+                    test: { a1: "aa", b1: "bb"}
+                  },
+                  
+                  {
+                    "name": "box2",
+                    "job_type": "b",
+                  },
+                ];
+                console.log($(jil).filter("[job_type='b']").size());
+                console.log($(jil).contents());
+                //$(jil).each(function() { console.log(this); });
+                expect(0);
             });
         });
     </script>

@@ -1,23 +1,19 @@
 // parent: top-level DOM object for the graph
 function GraphBuilder(topContainer) {
-    this.topContainer = topContainer;
-    
     this.idPrefix = "div_";
 }
 
-GraphBuilder.prototype.addJobDiv = function(job) {
-    var div = $('<div>', { id: this.idPrefix + job.id }, 
-                         { class: this.getJobClass(job) })
-              .css(
-                         { height: '100px', 
-                           width: '100px', 
-                           border: 'solid 1px' 
-                         }
-                  ).appendTo(this.topContainer);
-    return $(div);
+GraphBuilder.prototype.addJobDiv = function(job, parent) {
+    var div = $('<div>', 
+    {   id: this.idPrefix + job.name, 
+        class: this.getJobClass(job) 
+    })
+        .text(job.name)
+        .appendTo(parent)[0];
+    return div;
 } 
 
-GraphBuilder.prototype.getJobClass = function(job) {
+GraphBuilder.prototype.getJobClass = function(job, parent) {
     var jobType = job.job_type;
     switch (jobType) {
     case "c" : return "job";
