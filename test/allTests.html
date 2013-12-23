@@ -19,6 +19,43 @@
         $(document).ready(function() {
             var jilParser = new JilParser();
             
+            var testJil =
+            [
+              {
+                "name": "job0_1",
+                "job_type": "c",
+                "command": 'start ""',
+              },
+
+              {
+                "name": "box1",
+                "job_type": "b",
+              },
+              {
+                "name": "job1_1",
+                "job_type": "c",
+                "command": 'start ""',
+                "box": "box1"
+              },
+              {
+                "name": "job1_2",
+                "job_type": "c",
+                "command": 'start ""',
+                "box": "box1",
+                test: { a1: "aa", b1: "bb"}
+              },
+              
+              {
+                "name": "box2",
+                "job_type": "b",
+              },
+              {
+                "name": "job2_1",
+                "job_type": "c",
+                "box": "box2"
+              },
+            ];
+
             QUnit.test( "removeComments", function( assert ) {
                 assert.equal( jilParser.removeComments($("#testJil1").text()), 
                     $("#removeCommentsResult").text().trim());
@@ -53,7 +90,7 @@
                 assert.equal(div.className, divClass);
                 assert.equal(div.innerText, job.name);
                 assert.equal(div.parentElement.id, "graphContainer1");
-            }
+            };
             
             QUnit.test("addJobDiv - job", function( assert ) {
                 addJobTest(assert, "c", "job");
@@ -63,40 +100,28 @@
                 addJobTest(assert, "b", "box");
             });
 
+            QUnit.test("getBoxChildren - not a box", function( assert ) {
+                var builder = new GraphBuilder(testJil);
+                var jobArray = $.grep(testJil, function(job) { return job.name == "job1_1"; });
+                assert.equal(jobArray.length, 1);
+                assert.throws(function() { builder.getBoxChildren(jobArray[0]); }, 
+                    "The provided object is not a box.");
+            });
+            
+            QUnit.test("getBoxChildren", function( assert ) {
+                var builder = new GraphBuilder(testJil);
+                var jobArray = $.grep(testJil, function(job) { return job.name == "box1"; });
+                var children = builder.getBoxChildren(jobArray[0]);
+                assert.equal(children.length, 2);
+                $.each(children, function(i, child) { 
+                    assert.equal(child.name, "job1_" + (i+1));
+                });
+            });
+            
             QUnit.test("build graph", function( assert ) {
-                var jil =
-                [
-                  {
-                    "name": "job0_1",
-                    "job_type": "c",
-                    "command": 'start ""',
-                  },
-
-                  {
-                    "name": "box1",
-                    "job_type": "b",
-                  },
-                  {
-                    "name": "job1_1",
-                    "job_type": "c",
-                    "command": 'start ""',
-                    "box": "box1"
-                  },
-                  {
-                    "name": "job1_2",
-                    "job_type": "c",
-                    "command": 'start ""',
-                    "box": "box1",
-                    test: { a1: "aa", b1: "bb"}
-                  },
-                  
-                  {
-                    "name": "box2",
-                    "job_type": "b",
-                  },
-                ];
-                console.log($(jil).filter("[job_type='b']").size());
-                console.log($(jil).contents());
+                var builder = new GraphBuilder();
+                builder.draw(testJil);
+                
                 //$(jil).each(function() { console.log(this); });
                 expect(0);
             });
