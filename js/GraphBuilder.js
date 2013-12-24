@@ -1,3 +1,5 @@
+"use strict";
+
 // parent: top-level DOM object for the graph
 function GraphBuilder(jilArray, topContainer) {
     this.topContainer = topContainer;
@@ -52,6 +54,12 @@ GraphBuilder.prototype.getTopLevelJobs = function() {
 // Returns an empty array if the provided object is not a box
 // or the box has no children.
 GraphBuilder.prototype.getBoxChildren = function(box) {
+    return $.grep(this.jilArray, function(job){
+        return job.box == box.name;
+    });
+
+// Returns an array of 
+GraphBuilder.prototype.getConnections = function(div) {
     return $.grep(this.jilArray, function(job){
         return job.box == box.name;
     });
