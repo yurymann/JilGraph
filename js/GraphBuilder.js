@@ -6,28 +6,31 @@ function GraphBuilder(jilArray, topContainer) {
 }
 
 GraphBuilder.prototype.draw = function() {
-    for (var job in getTopLevelJobs()) {
-        addJobWithChildren(job);
-    }
+    thisBulider = this;
+    $.each(this.getTopLevelJobs(), function(i, job) {
+        thisBulider.addJobWithChildren(job, thisBulider.topContainer);
+    });
 }
 
 // Recursively adds a div for the job/box object.
 // Then, if the job is a box, adds divs for its children.
-GraphBuilder.prototype.addJobWithChildren = function(job) {
-    var div = addJobDiv(job, this.topContainer);
-    $.each(getBoxChildren(job), function() {
-        addJobWithChildren(child, parent);
+GraphBuilder.prototype.addJobWithChildren = function(job, parentDiv) {
+    var div = this.addJobDiv(job, parentDiv);
+    thisBulider = this;
+    $.each(this.getBoxChildren(job), function(i, child) {
+        thisBulider.addJobWithChildren(child, div);
     });
 }
 
 // Creates div for the job or box and adds it to the parent container.
-GraphBuilder.prototype.addJobDiv = function(job, parent) {
+GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
     var div = $('<div>', 
     {   id: this.idPrefix + job.name, 
         class: this.getJobClass(job) 
     })
         .text(job.name)
-        .appendTo(parent)[0];
+        .appendTo(parentDiv)
+        [0];
     return div;
 } 
 
@@ -42,15 +45,13 @@ GraphBuilder.prototype.getJobClass = function(job, parent) {
 
 GraphBuilder.prototype.getTopLevelJobs = function() {
     return $.grep(this.jilArray, function(job) {
-        return job.hasOwnProperty("box");
+        return !job.hasOwnProperty("box");
     });
 }
 
+// Returns an empty array if the provided object is not a box
+// or the box has no children.
 GraphBuilder.prototype.getBoxChildren = function(box) {
-    if (box.job_type != "b") {
-        throw "The provided object is not a box.";
-    }
-    
     return $.grep(this.jilArray, function(job){
         return job.box == box.name;
     });

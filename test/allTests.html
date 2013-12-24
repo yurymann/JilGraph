@@ -79,10 +79,10 @@
             });
             
             var addJobTest = function( assert, jobType, divClass ) {
+                var builder = initBuilder(testJil, $("#graphContainer1")[0]);
                 var job = {name: "job1", job_type: jobType};
-                
-                var builder = new GraphBuilder();
-                var div = builder.addJobDiv(job, $("#graphContainer1"));
+
+                var div = builder.addJobDiv(job, builder.topContainer);
                 
                 console.log(div);
                 
@@ -91,6 +91,13 @@
                 assert.equal(div.innerText, job.name);
                 assert.equal(div.parentElement.id, "graphContainer1");
             };
+            
+            var initBuilder = function(jilObject, topContainer) {
+                if (topContainer != undefined) {
+                    $(topContainer).empty();
+                }
+                return new GraphBuilder(jilObject, topContainer);
+            }
             
             QUnit.test("addJobDiv - job", function( assert ) {
                 addJobTest(assert, "c", "job");
@@ -101,15 +108,14 @@
             });
 
             QUnit.test("getBoxChildren - not a box", function( assert ) {
-                var builder = new GraphBuilder(testJil);
+                var builder = initBuilder(testJil);
                 var jobArray = $.grep(testJil, function(job) { return job.name == "job1_1"; });
                 assert.equal(jobArray.length, 1);
-                assert.throws(function() { builder.getBoxChildren(jobArray[0]); }, 
-                    "The provided object is not a box.");
+                assert.equal(builder.getBoxChildren(jobArray[0]).length, 0); 
             });
             
             QUnit.test("getBoxChildren", function( assert ) {
-                var builder = new GraphBuilder(testJil);
+                var builder = initBuilder(testJil);
                 var jobArray = $.grep(testJil, function(job) { return job.name == "box1"; });
                 var children = builder.getBoxChildren(jobArray[0]);
                 assert.equal(children.length, 2);
@@ -118,12 +124,28 @@
                 });
             });
             
-            QUnit.test("build graph", function( assert ) {
-                var builder = new GraphBuilder();
-                builder.draw(testJil);
-                
-                //$(jil).each(function() { console.log(this); });
-                expect(0);
+            QUnit.test("getTopLevelJobs", function( assert ) {
+                var builder = initBuilder(testJil);
+                var jobs = builder.getTopLevelJobs();
+                assert.equal(jobs.length, 3);
+                assert.equal(jobs[0].name, "job0_1");
+                assert.equal(jobs[1].name, "box1");
+                assert.equal(jobs[2].name, "box2");
+            });
+            
+            QUnit.test("addJobWithChildren", function( assert ) {
+                var builder = initBuilder(testJil, $("#graphContainer1")[0]);
+                var jobArray = $.grep(testJil, function(job) { return job.name == "box1"; });
+                builder.addJobWithChildren(jobArray[0], builder.topContainer);
+                assert.equal($(builder.topContainer).children().length, 1);
+                var boxDiv = $(builder.topContainer).children()[0];
+                assert.equal($(boxDiv).children().length, 2);
+            });
+
+            QUnit.test("draw", function( assert ) {
+                var builder = initBuilder(testJil, $("#graphContainer1")[0]);
+                builder.draw();
+                assert.equal($(builder.topContainer).children().length, 3);
             });
         });
     </script>
@@ -139,6 +161,8 @@
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
     
+    <code id="graphContainer1"></code>
+    <hr/>
     <code id="testJil1">
 /* 
 * Job 1
@@ -186,8 +210,6 @@ command: start ""
 "command": "start \"\"",
 }}
     </code>
-    <hr/>
-    <code id="graphContainer1" />
 	
 </body>
 </html> 
