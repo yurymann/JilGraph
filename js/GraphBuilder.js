@@ -8,7 +8,7 @@ function GraphBuilder(jilArray, topContainer) {
 }
 
 GraphBuilder.prototype.draw = function() {
-    thisBulider = this;
+    var thisBulider = this;
     $.each(this.getTopLevelJobs(), function(i, job) {
         thisBulider.addJobWithChildren(job, thisBulider.topContainer);
     });
@@ -18,7 +18,7 @@ GraphBuilder.prototype.draw = function() {
 // Then, if the job is a box, adds divs for its children.
 GraphBuilder.prototype.addJobWithChildren = function(job, parentDiv) {
     var div = this.addJobDiv(job, parentDiv);
-    thisBulider = this;
+    var thisBulider = this;
     $.each(this.getBoxChildren(job), function(i, child) {
         thisBulider.addJobWithChildren(child, div);
     });
@@ -57,11 +57,54 @@ GraphBuilder.prototype.getBoxChildren = function(box) {
     return $.grep(this.jilArray, function(job){
         return job.box == box.name;
     });
+}
 
-// Returns an array of 
-GraphBuilder.prototype.getConnections = function(div) {
+// Returns an array of JilConnection structures representing all jil dependencies.
+GraphBuilder.prototype.getConnections = function() {
+    var result = [];
+    $.each(jilArray, function(i, job) {
+        //if (job.)
+        //thisBulider.addJobWithChildren(job, thisBulider.topContainer);
+    });
+    
+    var topJobs = getTopLevelJobs();
+    
     return $.grep(this.jilArray, function(job){
         return job.box == box.name;
     });
 }
 
+// Returns an array of JilConnection objects
+GraphBuilder.prototype.getDependencies = function(job) {
+    //if (!job.condition) {
+    //    return [];
+   // }
+    
+    var re = new RegExp(/(\w+)\s*\(\s*([^)]+)\s*\)/g);
+    var iStatus = 1; // index of the capture group capturing the expected status of the dependency job
+    var iDependency = 2; // index of the capture group capturing the name of the dependency job
+
+    var result = [];
+    var condition;
+    var newCondition = null;
+    var prevCondition = null;
+    var match;
+    while (match = re.exec(job.condition)) 
+    {
+        result.push(new JilConnection(
+            job,
+            this.findJob(match[iDependency]),
+            match[iStatus]
+        ));
+    }
+    return result;
+}
+
+GraphBuilder.prototype.findJob = function(name) {
+    for (var i = 0; i < this.jilArray.length; i++) {
+        var job = this.jilArray[i];
+        if (job.name == name) {
+            return job;
+        }
+    }
+}

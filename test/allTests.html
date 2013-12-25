@@ -148,6 +148,55 @@
                 builder.draw();
                 assert.equal($(builder.topContainer).children().length, 3);
             });
+            
+            QUnit.test("findJob", function( assert ) {
+                var builder = initBuilder(testJil, $("#graphContainer1")[0]);
+                assert.equal(builder.findJob("box1"), testJil[1]);
+            });
+            
+            QUnit.test("getDependencies", function( assert ) {
+                var jil = [
+                    {
+                        name: "job1",
+                        job_type: "c",
+                    },
+                    {
+                        name: "job2",
+                        job_type: "c",
+                        condition: "s(job1)",
+                    },
+                    {
+                        name: "job3",
+                        job_type: "c",
+                        condition: "success(job1)",
+                    },
+                    {
+                        name: "job4",
+                        job_type: "c",
+                        condition: "test: s(job1) and n(job2)|(success(box1)& s(box2)) or  failure  (job3)",
+                    },
+                    {
+                        name: "box1",
+                        job_type: "b",
+                    },
+                    {
+                        name: "box2",
+                        job_type: "b",
+                    },
+                ]
+                var builder = initBuilder(jil, $("#graphContainer1")[0]);
+                var job1 = builder.findJob("job1");
+                var job2 = builder.findJob("job2");
+                var job3 = builder.findJob("job3");
+                var job4 = builder.findJob("job4");
+                var box1 = builder.findJob("box1");
+                var box2 = builder.findJob("box2");
+                assert.deepEqual(builder.getDependencies(job1), []);
+                var temp = builder.getDependencies(job2);
+                assert.deepEqual({obj: temp}, {obj: [{source: job2, target: job1, status: "s"}]});
+                assert.deepEqual(builder.getDependencies(job2), [{source: job2, target: job1, status: "s"}]);
+                //assert.equalDeep(builder.getDependencies(builder.findJob("job3"))[0], [{source: "job3", target: "job2", status: "s"}]);
+            });
         });
     </script>
 
