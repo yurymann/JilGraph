@@ -192,10 +192,15 @@
                 var box1 = builder.findJob("box1");
                 var box2 = builder.findJob("box2");
                 assert.deepEqual(builder.getDependencies(job1), []);
-                var temp = builder.getDependencies(job2);
-                assert.deepEqual({obj: temp}, {obj: [{source: job2, target: job1, status: "s"}]});
-                assert.deepEqual(builder.getDependencies(job2), [{source: job2, target: job1, status: "s"}]);
-                //assert.equalDeep(builder.getDependencies(builder.findJob("job3"))[0], [{source: "job3", target: "job2", status: "s"}]);
+                assert.deepEqual(builder.getDependencies(job2), [new JilConnection(job2, job1, "s")]);
+                assert.deepEqual(builder.getDependencies(job3), [new JilConnection(job3, job1, "s")]);
+                assert.deepEqual(builder.getDependencies(job4), [
+                    new JilConnection(job4, job1, "s"),
+                    new JilConnection(job4, job2, "n"),
+                    new JilConnection(job4, box1, "s"),
+                    new JilConnection(job4, box2, "s"),
+                    new JilConnection(job4, job3, "f"),
+                ]);
             });
         });
     </script>
