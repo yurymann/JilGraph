@@ -39,7 +39,8 @@
                 "name": "job1_1",
                 "job_type": "c",
                 "command": 'start ""',
-                "box": "box1"
+                "box": "box1",
+                "condition" : "s(job0_1)",
               },
               {
                 "name": "job1_2",
@@ -56,7 +57,8 @@
               {
                 "name": "job2_1",
                 "job_type": "c",
-                "box": "box2"
+                "box": "box2",
+                "condition" : "s(job0_1) and s(job1_2) and s(box1)",
               },
             ];
 
@@ -88,8 +90,6 @@
 
                 var div = builder.addJobDiv(job, builder.topContainer);
                 
-                console.log(div);
-                
                 assert.equal(div.id, builder.idPrefix + job.name);
                 assert.equal(div.className, divClass);
                 assert.equal(div.innerText, job.name);
@@ -100,7 +100,7 @@
                 if (topContainer != undefined) {
                     $(topContainer).empty();
                 }
-                return new GraphBuilder(jilObject, topContainer, jsPlumb);
+                return new GraphBuilder(jilObject, topContainer);
             }
             
             QUnit.test("addJobDiv - job", function( assert ) {
@@ -213,6 +213,13 @@
                     new JilConnection(job4, box2, "s"),
                     new JilConnection(job4, job3, "f"),
                 ]);
+            });
+
+            QUnit.test("draw", function( assert ) {
+                var builder = initBuilder(testJil, $("#graphContainer1")[0]);
+                console.log("draw");
+                builder.draw();
+                expect(0);
             });
         });
     </script>

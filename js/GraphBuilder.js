@@ -1,14 +1,10 @@
 "use strict";
 
-var jsPlumb;
-
 // parent: top-level DOM object for the graph
 function GraphBuilder(jilArray, topContainer, globalJsPlumb) {
     this.topContainer = topContainer;
     this.jilArray = jilArray;
     this.idPrefix = "jildiv_";
-    
-    jsPlumb = globalJsPlumb;
     this.initialiseJsPlumb();
 }
 
@@ -25,10 +21,13 @@ GraphBuilder.prototype.insertDivs = function() {
 }
 
 GraphBuilder.prototype.insertConnections = function() {
-    $.each(getConnections(), function(i, connection) {
+    var thisBuilder = this;
+    $.each(this.getConnections(), function(i, connection) {
+        console.log("#" + thisBuilder.idPrefix + connection.source.name);
+        console.log($("#" + thisBuilder.idPrefix + connection.source.name));
         jsPlumb.connect({
-            source: $("#" + this.idPrefix + connection.source),
-            target: $("#" + this.idPrefix + connection.source),
+            source: $("#" + thisBuilder.idPrefix + connection.source.name),
+            target: $("#" + thisBuilder.idPrefix + connection.target.name),
         });
     });    
 }
@@ -47,7 +46,7 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
                 { fillStyle:"#225588" }, 
                 { fillStyle:"#558822" }
               ],
-            Overlays: [ "Arrow", { location: 1 } ],
+            //Overlays: [ "Arrow", { location: 1 } ],
         });
     });
 }
