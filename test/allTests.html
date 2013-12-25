@@ -4,6 +4,8 @@
 <head>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../jslib/jquery.jsPlumb-1.5.4-min.js"></script>
+
 	<script type="text/javascript" src="../js/jilParser.js"></script>
     <script type="text/javascript" src="../js/JilConnection.js"></script>
     <script type="text/javascript" src="../js/GraphBuilder.js"></script>
@@ -17,6 +19,7 @@
 
     <script type="text/javascript">
         "use strict";
+        
         $(document).ready(function() {
             var jilParser = new JilParser();
             
@@ -87,7 +90,7 @@
                 
                 console.log(div);
                 
-                assert.equal(div.id, "div_" + job.name);
+                assert.equal(div.id, builder.idPrefix + job.name);
                 assert.equal(div.className, divClass);
                 assert.equal(div.innerText, job.name);
                 assert.equal(div.parentElement.id, "graphContainer1");
@@ -97,7 +100,7 @@
                 if (topContainer != undefined) {
                     $(topContainer).empty();
                 }
-                return new GraphBuilder(jilObject, topContainer);
+                return new GraphBuilder(jilObject, topContainer, jsPlumb);
             }
             
             QUnit.test("addJobDiv - job", function( assert ) {
@@ -143,9 +146,9 @@
                 assert.equal($(boxDiv).children().length, 2);
             });
 
-            QUnit.test("draw", function( assert ) {
+            QUnit.test("insertDivs", function( assert ) {
                 var builder = initBuilder(testJil, $("#graphContainer1")[0]);
-                builder.draw();
+                builder.insertDivs();
                 assert.equal($(builder.topContainer).children().length, 3);
             });
             
@@ -154,7 +157,7 @@
                 assert.equal(builder.findJob("box1"), testJil[1]);
             });
             
-            QUnit.test("getDependencies", function( assert ) {
+            QUnit.test("getDependencies and getConnections", function( assert ) {
                 var jil = [
                     {
                         name: "job1",
@@ -195,6 +198,15 @@
                 assert.deepEqual(builder.getDependencies(job2), [new JilConnection(job2, job1, "s")]);
                 assert.deepEqual(builder.getDependencies(job3), [new JilConnection(job3, job1, "s")]);
                 assert.deepEqual(builder.getDependencies(job4), [
+                    new JilConnection(job4, job1, "s"),
+                    new JilConnection(job4, job2, "n"),
+                    new JilConnection(job4, box1, "s"),
+                    new JilConnection(job4, box2, "s"),
+                    new JilConnection(job4, job3, "f"),
+                ]);
+                assert.deepEqual(builder.getConnections(), [
+                    new JilConnection(job2, job1, "s"),
+                    new JilConnection(job3, job1, "s"),
                     new JilConnection(job4, job1, "s"),
                     new JilConnection(job4, job2, "n"),
                     new JilConnection(job4, box1, "s"),

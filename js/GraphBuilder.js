@@ -1,16 +1,54 @@
 "use strict";
 
+var jsPlumb;
+
 // parent: top-level DOM object for the graph
-function GraphBuilder(jilArray, topContainer) {
+function GraphBuilder(jilArray, topContainer, globalJsPlumb) {
     this.topContainer = topContainer;
     this.jilArray = jilArray;
-    this.idPrefix = "div_";
+    this.idPrefix = "jildiv_";
+    
+    jsPlumb = globalJsPlumb;
+    this.initialiseJsPlumb();
 }
 
 GraphBuilder.prototype.draw = function() {
+    this.insertDivs();
+    this.insertConnections();
+}
+
+GraphBuilder.prototype.insertDivs = function() {
     var thisBulider = this;
     $.each(this.getTopLevelJobs(), function(i, job) {
         thisBulider.addJobWithChildren(job, thisBulider.topContainer);
+    });
+}
+
+GraphBuilder.prototype.insertConnections = function() {
+    $.each(getConnections(), function(i, connection) {
+        jsPlumb.connect({
+            source: $("#" + this.idPrefix + connection.source),
+            target: $("#" + this.idPrefix + connection.source),
+        });
+    });    
+}
+
+GraphBuilder.prototype.initialiseJsPlumb = function() {
+    jsPlumb.ready(function() {
+        //      jsPlumb.DefaultDragOptions = { cursor: "pointer", zIndex: 2000 };
+
+        jsPlumb.importDefaults({
+            Container: $("body"),
+            Anchor: "Continuous",
+            PaintStyle: { lineWidth : 2, strokeStyle : "#456"},
+            //Endpoints: [ [ "Dot", 5 ], [ "Dot", 3 ] ],
+            Endpoint: [ "Dot", { radius: 3 } ],
+            EndpointStyles: [
+                { fillStyle:"#225588" }, 
+                { fillStyle:"#558822" }
+              ],
+            Overlays: [ "Arrow", { location: 1 } ],
+        });
     });
 }
 
@@ -62,16 +100,11 @@ GraphBuilder.prototype.getBoxChildren = function(box) {
 // Returns an array of JilConnection structures representing all jil dependencies.
 GraphBuilder.prototype.getConnections = function() {
     var result = [];
-    $.each(jilArray, function(i, job) {
-        //if (job.)
-        //thisBulider.addJobWithChildren(job, thisBulider.topContainer);
+    var thisGraph = this;
+    $.each(this.jilArray, function(i, job) {
+        result = result.concat(thisGraph.getDependencies(job));
     });
-    
-    var topJobs = getTopLevelJobs();
-    
-    return $.grep(this.jilArray, function(job){
-        return job.box == box.name;
-    });
+    return result;
 }
 
 // Returns an array of JilConnection objects
