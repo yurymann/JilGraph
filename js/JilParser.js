@@ -3,9 +3,12 @@
 function JilParser() {
     this.jobStartTags = [
         "insert_job",
-        "insert_machine",
-        "delete_job",
     ];
+    this.jilSectionTags = this.jobStartTags.concat([
+        "insert_machine",
+        "delete_machine",
+        "delete_job",
+    ]);
 }
 
 JilParser.prototype.loadJil = function(jilText) {
@@ -30,9 +33,11 @@ JilParser.prototype.parse = function(jilText) {
         var propName = line.match(/\w+:/)[0].replace(":", "");
         var propValue = line.replace(/\w+:\s*/, "").trim();
         
-        if ($.inArray(propName, this.jobStartTags) >= 0) {
+        if ($.inArray(propName, this.jilSectionTags) >= 0) {
             currentJob = {name: propValue};
-            result.push(currentJob);
+            if ($.inArray(propName, this.jobStartTags) >= 0) {
+                result.push(currentJob); 
+            } // Otherwise we're creating the new job to parse and skip all its other properties, but not adding it to the resulting array
         } else {
             currentJob[propName] = propValue;
         }

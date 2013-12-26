@@ -8,31 +8,43 @@
     <script type="text/javascript" src="../js/GraphBuilder.js"></script>
     <link rel="stylesheet" href="../css/jilGraph.css">
 
-    <script type="text/javascript" src="../data/example.js"></script>
+<!--     <script type="text/javascript" src="../data/example.js"></script> -->
 
     <script type="text/javascript">
         "use strict";
         
         $( document ).ready(function() {
-            var iFileName = 2; // index of the capture group of in the regex
-            var match = /(\?|&)jil=([^&]*)/.exec(decodeURIComponent(document.location.search));
-            var sourceJilFile = (match) ? match[iFileName] : null;
-            console.log(sourceJilFile);
-            $("#sourceJil").append('<object id="jilTextObject" type="text/plain" data="' + sourceJilFile + '"></object>');;
-            console.log($("#jilTextObject"));
-            console.log($("#sourceJil"));
-            console.log($("#jilTextObject").text());
-            
-            //var builder = new GraphBuilder($("#graphContainer1"));
-            //builder.addJobDiv();
-            //$('#textDiv').load('test-text.txt');
-            //$("#textDiv").append('<object name="foo" type="text/html" data="test-text.txt"></object>'); // correct
-            //$("#textDiv").append('<object name="foo" type="text/html" data="file:test-text.txt"></object>'); // correct
-            //$("#textDiv").append('<object name="foo" type="text/html" data="file:///D:/MUV/PROG/git/test1.txt"></object>'); correct
+            try {
+                var parser = new JilParser();
+                var builder = new GraphBuilder(parser.parse($("#sourceJil").text()), $("#graphContainer"));
+                builder.draw();
+            } catch (e) {
+                window.onload = function() { window.scrollTo(0, 0); }
+                $("#errorPane").append(getErrorText(e)).css("color", "red");
+                //$("#contents").animate({ scrollTop: 0 });
+                //$("#contents").scrollTop(0);
+                //window.onload = function() { window.scrollTo(0, 0); }
+                //$(document).scrollTop(0);
+                //window.scrollTo(0, 0);
+                //document.body.scrollTop = document.documentElement.scrollTop = 0;
+                console.log($("errorPane"));
+                $('body').animate({scrollTop: $("#errorPane").offset().top }, 1);
+            }
         });
+        
+        function getErrorText(errorObj) {
+            return "ERROR: " + errorObj.name + "<br>" 
+                + "Message: " + errorObj.message + "<br>" 
+                + "File: " + errorObj.fileName + "<br>" 
+                + "Line: " + errorObj.lineNumber + "<br>" 
+                + errorObj.stack;
+        }
  </script>
  </head>
  <body>
-   <div id="sourceJil" style="display:block"></div>
+    <div id="errorPane" class="error"></div>
+    <div id="graphContainer"></div>
+    <code id="sourceJil" style="display:none">
+   </code>
  </body>
  

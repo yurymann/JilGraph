@@ -1,7 +1,7 @@
 "use strict";
 
 // parent: top-level DOM object for the graph
-function GraphBuilder(jilArray, topContainer, globalJsPlumb) {
+function GraphBuilder(jilArray, topContainer) {
     this.topContainer = topContainer;
     this.jilArray = jilArray;
     this.idPrefix = "jildiv_";
@@ -54,11 +54,15 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
 // Recursively adds a div for the job/box object.
 // Then, if the job is a box, adds divs for its children.
 GraphBuilder.prototype.addJobWithChildren = function(job, parentDiv) {
-    var div = this.addJobDiv(job, parentDiv);
-    var thisBulider = this;
-    $.each(this.getBoxChildren(job), function(i, child) {
-        thisBulider.addJobWithChildren(child, div);
-    });
+    try {
+        var div = this.addJobDiv(job, parentDiv);
+        var thisBulider = this;
+        $.each(this.getBoxChildren(job), function(i, child) {
+            thisBulider.addJobWithChildren(child, div);
+        });
+    } catch (e) {
+        throw new Error("Error when adding job '" + job.name + "' to div '" + parentDiv.id + "': " + e.message);
+    }
 }
 
 // Creates div for the job or box and adds it to the parent container.
@@ -79,7 +83,7 @@ GraphBuilder.prototype.getJobClass = function(job, parent) {
     case "c" : return "job";
     case "b" : return "box";
     }
-    throw "Unknown job type: " + jobType;
+    throw new Error("Unknown job type: " + jobType);
 }
 
 GraphBuilder.prototype.getTopLevelJobs = function() {
@@ -108,10 +112,6 @@ GraphBuilder.prototype.getConnections = function() {
 
 // Returns an array of JilConnection objects
 GraphBuilder.prototype.getDependencies = function(job) {
-    //if (!job.condition) {
-    //    return [];
-   // }
-    
     var re = new RegExp(/(\w+)\s*\(\s*([^)]+)\s*\)/g);
     var iStatus = 1; // index of the capture group capturing the expected status of the dependency job
     var iDependency = 2; // index of the capture group capturing the name of the dependency job

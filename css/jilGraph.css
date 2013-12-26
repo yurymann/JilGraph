@@ -11,3 +11,7 @@
     display:inline-block;
     /*float: left;*/
 }
+
+.error {
+    color: red;
+}
