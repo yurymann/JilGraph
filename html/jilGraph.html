@@ -1,0 +1,38 @@
+ <head>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../jslib/jquery.jsPlumb-1.5.4-min.js"></script>
+
+	<script type="text/javascript" src="../js/jilParser.js"></script>
+    <script type="text/javascript" src="../js/JilConnection.js"></script>
+    <script type="text/javascript" src="../js/GraphBuilder.js"></script>
+    <link rel="stylesheet" href="../css/jilGraph.css">
+
+    <script type="text/javascript" src="../data/example.js"></script>
+
+    <script type="text/javascript">
+        "use strict";
+        
+        $( document ).ready(function() {
+            var iFileName = 2; // index of the capture group of in the regex
+            var match = /(\?|&)jil=([^&]*)/.exec(decodeURIComponent(document.location.search));
+            var sourceJilFile = (match) ? match[iFileName] : null;
+            console.log(sourceJilFile);
+            $("#sourceJil").append('<object id="jilTextObject" type="text/plain" data="' + sourceJilFile + '"></object>');;
+            console.log($("#jilTextObject"));
+            console.log($("#sourceJil"));
+            console.log($("#jilTextObject").text());
+            
+            //var builder = new GraphBuilder($("#graphContainer1"));
+            //builder.addJobDiv();
+            //$('#textDiv').load('test-text.txt');
+            //$("#textDiv").append('<object name="foo" type="text/html" data="test-text.txt"></object>'); // correct
+            //$("#textDiv").append('<object name="foo" type="text/html" data="file:test-text.txt"></object>'); // correct
+            //$("#textDiv").append('<object name="foo" type="text/html" data="file:///D:/MUV/PROG/git/test1.txt"></object>'); correct
+        });
+ </script>
+ </head>
+ <body>
+   <div id="sourceJil" style="display:block"></div>
+ </body>
+ 
