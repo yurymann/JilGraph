@@ -21,13 +21,6 @@
             } catch (e) {
                 window.onload = function() { window.scrollTo(0, 0); }
                 $("#errorPane").append(getErrorText(e)).css("color", "red");
-                //$("#contents").animate({ scrollTop: 0 });
-                //$("#contents").scrollTop(0);
-                //window.onload = function() { window.scrollTo(0, 0); }
-                //$(document).scrollTop(0);
-                //window.scrollTo(0, 0);
-                //document.body.scrollTop = document.documentElement.scrollTop = 0;
-                console.log($("errorPane"));
                 $('body').animate({scrollTop: $("#errorPane").offset().top }, 1);
             }
         });

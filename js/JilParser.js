@@ -9,10 +9,7 @@ function JilParser() {
         "delete_machine",
         "delete_job",
     ]);
-}
-
-JilParser.prototype.loadJil = function(jilText) {
-    var jilTextWithoutComments = removeComments(jilText);
+    this.externalBoxName = "External_Jobs";
 }
 
 JilParser.prototype.removeComments = function(jilText) {
@@ -42,15 +39,96 @@ JilParser.prototype.parse = function(jilText) {
             currentJob[propName] = propValue;
         }
     }
+    
+    this.setDependenciesAsReferences(result);
+    
     return result;
 }
 
-JilParser.prototype.quote = function(str) {
-    return '"' + str + '"';
+// Replaces textual dependency conditions with references to the Job or Box objects.
+// Side-effect: if dependency conditions refer to any jobs not existing in the provided jil text, 
+// the parser assumes that these are external jobs on the same Autosys instance (e.g. jobs of other applications). 
+// "Stubs" for these jobs are created and grouped into a new Autosys box, so that such external dependencies
+// could be shown on the graph. 
+JilParser.prototype.setDependenciesAsReferences = function(jilArray) {
+    var externalJobs = [];
+    var thisParser = this;
+    $.each(jilArray, function(i, job) {
+        job["condition"] = thisParser.getDependencies(jilArray, job, externalJobs);
+    });
+    
+    if (externalJobs.length > 0) {
+        var externalBox = {
+            name: this.externalBoxName,
+            job_type: "b",
+            conditiong: externalJobs,
+        };
+        jilArray.unshift(externalBox, jilArray);
+    }
+}
+
+JilParser.prototype.validate = function(jilArray) {
+    var jobsWithDependencies = $.grep(jilArray, function(i, job) {
+        return job.hasOwnProperty("condition");
+    });
+    checkForCircularDependencies(jobsWithDependencies, []);
+}
+
+JilParser.prototype.checkForCircularDependencies = function(dependentJobs, allParents) {
+    $.each(dependentJobs, function(i, parentJob) {
+        if ($.inArray(parentJob, allParents)) {
+            var allParentNames = [];
+            $.each(allParents, function(i, job) { allParentNames.push(job.name) });
+            throw new Error("Circular dependency found: " + allParentNames.join(", "));
+        }
+    });
 }
 
 JilParser.prototype.insertBrackets = function(jilText) {
     var resultText = "";
     
     return resultText.trim();
+}
+
+// Returns an array of structures { dependencyName: "...", status: "..." }
+JilParser.prototype.parseCondition = function(conditionString) {
+    var result = [];
+    var re = new RegExp(/(\w+)\s*\(\s*([^)]+)\s*\)/g);
+
+    var iStatus = 1; // index of the capture group capturing the expected status of the dependency job
+    var iDependency = 2; // index of the capture group capturing the name of the dependency job
+    var match;
+    while (match = re.exec(conditionString)) 
+    {
+        result.push({ dependencyName: match[iDependency], status: match[iStatus][0] });
+    };
+    return result;
+}
+
+// Returns an array of JilConnection objects
+JilParser.prototype.getDependencies = function(jilArray, job, externalJobs) {
+    var result = [];
+    var thisParser = this;
+    $.each(this.parseCondition(job.condition), function(i, dependencyStruct) {
+        var dependency = thisParser.findJob(jilArray, dependencyStruct.dependencyName);
+        if (!dependency) {
+            dependency = { name: dependencyStruct.dependencyName, job_type: "c", box: thisParser.externalBoxName};
+            externalJobs.push(dependency);
+        }
+        result.push(new JilConnection(
+            job.name,
+            dependency.name,
+            dependencyStruct.status
+        ));
+    });
+    return result;
+}
+
+JilParser.prototype.findJob = function(jilArray, name) {
+    for (var i = 0; i < jilArray.length; i++) {
+        var job = jilArray[i];
+        if (job.name == name) {
+            return job;
+        }
+    }
 }

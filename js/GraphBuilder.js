@@ -6,6 +6,7 @@ function GraphBuilder(jilArray, topContainer) {
     this.jilArray = jilArray;
     this.idPrefix = "jildiv_";
     this.initialiseJsPlumb();
+    this.jilParser = new JilParser();
 }
 
 GraphBuilder.prototype.draw = function() {
@@ -23,11 +24,9 @@ GraphBuilder.prototype.insertDivs = function() {
 GraphBuilder.prototype.insertConnections = function() {
     var thisBuilder = this;
     $.each(this.getConnections(), function(i, connection) {
-        console.log("#" + thisBuilder.idPrefix + connection.source.name);
-        console.log($("#" + thisBuilder.idPrefix + connection.source.name));
         jsPlumb.connect({
-            source: $("#" + thisBuilder.idPrefix + connection.source.name),
-            target: $("#" + thisBuilder.idPrefix + connection.target.name),
+            source: $("#" + thisBuilder.idPrefix + connection.source),
+            target: $("#" + thisBuilder.idPrefix + connection.target),
         });
     });    
 }
@@ -105,38 +104,7 @@ GraphBuilder.prototype.getConnections = function() {
     var result = [];
     var thisGraph = this;
     $.each(this.jilArray, function(i, job) {
-        result = result.concat(thisGraph.getDependencies(job));
+        result = result.concat(job.condition);
     });
     return result;
-}
-
-// Returns an array of JilConnection objects
-GraphBuilder.prototype.getDependencies = function(job) {
-    var re = new RegExp(/(\w+)\s*\(\s*([^)]+)\s*\)/g);
-    var iStatus = 1; // index of the capture group capturing the expected status of the dependency job
-    var iDependency = 2; // index of the capture group capturing the name of the dependency job
-
-    var result = [];
-    var condition;
-    var newCondition = null;
-    var prevCondition = null;
-    var match;
-    while (match = re.exec(job.condition)) 
-    {
-        result.push(new JilConnection(
-            job,
-            this.findJob(match[iDependency]),
-            match[iStatus]
-        ));
-    }
-    return result;
-}
-
-GraphBuilder.prototype.findJob = function(name) {
-    for (var i = 0; i < this.jilArray.length; i++) {
-        var job = this.jilArray[i];
-        if (job.name == name) {
-            return job;
-        }
-    }
 }

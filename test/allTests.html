@@ -29,59 +29,147 @@
                 "name": "job0_1",
                 "job_type": "c",
                 "command": 'start ""',
+                "condition": [],
               },
-
               {
                 "name": "box1",
                 "job_type": "b",
+                "condition": [],
               },
               {
                 "name": "job1_1",
                 "job_type": "c",
                 "command": 'start ""',
                 "box": "box1",
-                "condition" : "s(job0_1)",
+                "condition" : [ new JilConnection("job1_1", "job0_1", "s") ],
               },
               {
                 "name": "job1_2",
                 "job_type": "c",
                 "command": 'start ""',
                 "box": "box1",
-                test: { a1: "aa", b1: "bb"}
+                "condition": [],
               },
               
               {
                 "name": "box2",
                 "job_type": "b",
+                "condition": [],
               },
               {
                 "name": "job2_1",
                 "job_type": "c",
                 "box": "box2",
-                "condition" : "s(job0_1) and s(job1_2) and s(box1)",
+                "condition" : [ 
+                    new JilConnection("job2_1", "job0_1", "s"),
+                    new JilConnection("job2_1", "job1_2", "s"),
+                    new JilConnection("job2_1", "box1", "s")
+                ],
               },
             ];
 
-            QUnit.test( "removeComments", function( assert ) {
+            QUnit.test( "JilParser.removeComments", function( assert ) {
                 assert.equal( jilParser.removeComments($("#testJil1").text()), 
                     $("#removeCommentsResult").text().trim());
             });        
 
-            QUnit.test( "parse", function( assert ) {
-                var expected =
+            QUnit.test("JilParser.findJob", function( assert ) {
+                var inputJilArray =
                 [
                   {
+                    "name": "box1",
                     "job_type": "b",
-                    "name": "box1"
                   },
                   {
-                    "command": 'start ""',
+                    "name": "job1",
                     "job_type": "c",
-                    "name": "job1_2"
-                  }
+                  },
                 ];
-                assert.deepEqual( jilParser.parse($("#testJil1").text()), 
-                    expected);
+                assert.equal(jilParser.findJob(inputJilArray, "box1"), inputJilArray[0]);
+                assert.equal(jilParser.findJob(inputJilArray, "job1"), inputJilArray[1]);
+            });
+            
+            QUnit.test("JilParser.parseCondition", function( assert ) {
+                assert.deepEqual(jilParser.parseCondition("test: s(job1) and n(job2)|(success(box1)& s(box2)) or  failure  (job3)"), [
+                    { dependencyName: "job1", status: "s" },
+                    { dependencyName: "job2", status: "n" },
+                    { dependencyName: "box1", status: "s" },
+                    { dependencyName: "box2", status: "s" },
+                    { dependencyName: "job3", status: "f" },
+                ]);
+            });
+
+            QUnit.test("JilParser.getDependencies", function( assert ) {
+                var job1 = {
+                    "name": "job1",
+                    "job_type": "c",
+                };
+                var job2 = {
+                    "name": "job2",
+                    "job_type": "c",
+                };
+                var job3 = {
+                    "name": "job3",
+                    "job_type": "c",
+                    "condition": "s(job1) & f(job4) & n(unknownJob)",
+                };
+                var job4 = {
+                    "name": "job4",
+                    "job_type": "c",
+                };
+                var unknownJob = {
+                    "name": "unknownJob",
+                    "job_type": "c",
+                    "box": "External_Jobs",
+                };
+                /*
+                var externalBox = {
+                    "name": "External_Jobs",
+                    "job_type": "b",
+                }
+                */
+
+                var sourceJilArray = [ job1, job2, job3, job4 ];
+                var expectedJilArrayAfterParse = [ job1, job2, job3, job4 ];
+                var externalJobs = [];
+                assert.deepEqual(jilParser.getDependencies(sourceJilArray, job1, externalJobs), []);
+                assert.deepEqual(externalJobs, []);
+                assert.deepEqual(sourceJilArray, expectedJilArrayAfterParse);
+
+                externalJobs = [];
+                assert.deepEqual(jilParser.getDependencies(sourceJilArray, job3, externalJobs)[0], [
+                    new JilConnection("job3", "job1", "s"),
+                    new JilConnection("job3", "job4", "f"),
+                    new JilConnection("job3", "unknownJob", "f"),
+                ][0]);
+                assert.deepEqual(externalJobs, [unknownJob]);
+                assert.deepEqual(sourceJilArray, expectedJilArrayAfterParse);
+            });
+
+            QUnit.test( "JilParser.parse", function( assert ) {
+                var job1_1 = {
+                    "box": "box1",
+                    "command": "start \"\"",
+                    "condition": [],
+                    "job_type": "c",
+                    "name": "job1_1"
+                };
+                var job1_2 = {
+                    "name": "job1_2",
+                    "job_type": "c",
+                    "box": "box1",
+                };
+                job1_2["condition"] = [new JilConnection("job1_2",  "job1_1", "s")];
+                var expected = [
+                    {
+                        "condition": [],
+                        "job_type": "b",
+                        "name": "box1"
+                    },
+                    job1_1,
+                    job1_2,
+                ];
+                assert.deepEqual( jilParser.parse($("#testJil1").text()), expected);
             });
             
             var addJobTest = function( assert, jobType, divClass ) {
@@ -103,11 +191,11 @@
                 return new GraphBuilder(jilObject, topContainer);
             }
             
-            QUnit.test("addJobDiv - job", function( assert ) {
+            QUnit.test("GraphBuilder.addJobDiv - job", function( assert ) {
                 addJobTest(assert, "c", "job");
             });
 
-            QUnit.test("addJobDiv - box", function( assert ) {
+            QUnit.test("GraphBuilder.addJobDiv - box", function( assert ) {
                 addJobTest(assert, "b", "box");
             });
 
@@ -152,67 +240,59 @@
                 assert.equal($(builder.topContainer).children().length, 3);
             });
             
-            QUnit.test("findJob", function( assert ) {
-                var builder = initBuilder(testJil, $("#graphContainer1")[0]);
-                assert.equal(builder.findJob("box1"), testJil[1]);
-            });
-            
-            QUnit.test("getDependencies and getConnections", function( assert ) {
-                var jil = [
-                    {
-                        name: "job1",
-                        job_type: "c",
-                    },
-                    {
-                        name: "job2",
-                        job_type: "c",
-                        condition: "s(job1)",
-                    },
-                    {
-                        name: "job3",
-                        job_type: "c",
-                        condition: "success(job1)",
-                    },
-                    {
-                        name: "job4",
-                        job_type: "c",
-                        condition: "test: s(job1) and n(job2)|(success(box1)& s(box2)) or  failure  (job3)",
-                    },
-                    {
-                        name: "box1",
-                        job_type: "b",
-                    },
-                    {
-                        name: "box2",
-                        job_type: "b",
-                    },
-                ]
+            QUnit.test("getConnections", function( assert ) {
+                var job1 = {
+                    name: "job1",
+                    job_type: "c",
+                    condition: [],
+                };
+                var job2 = {
+                    name: "job2",
+                    job_type: "c",
+                };
+                job2["condition"] = [ new JilConnection("job2", "job1", "s") ];
+                var job3 = {
+                    name: "job3",
+                    job_type: "c",
+                };
+                job3["condition"] = [ new JilConnection("job3", "job1", "s") ];
+                var job4 = {
+                    name: "job4",
+                    job_type: "c",
+                };
+                job4["condition"] = [ 
+                    new JilConnection("job4", "job1", "s"),
+                    new JilConnection("job4", "job2", "n"),
+                    new JilConnection("job4", "box1", "s"),
+                    new JilConnection("job4", "box2", "s"),
+                    new JilConnection("job4", "job3", "f"),
+                ];
+                var box1 = {
+                    name: "box1",
+                    job_type: "b",
+                    condition: [],
+                };
+                var box2 = {
+                    name: "box2",
+                    job_type: "b",
+                    condition: [],
+                };
+                var jil = [job1, job2, job3, job4, box1, box2];
+
                 var builder = initBuilder(jil, $("#graphContainer1")[0]);
-                var job1 = builder.findJob("job1");
-                var job2 = builder.findJob("job2");
-                var job3 = builder.findJob("job3");
-                var job4 = builder.findJob("job4");
-                var box1 = builder.findJob("box1");
-                var box2 = builder.findJob("box2");
-                assert.deepEqual(builder.getDependencies(job1), []);
-                assert.deepEqual(builder.getDependencies(job2), [new JilConnection(job2, job1, "s")]);
-                assert.deepEqual(builder.getDependencies(job3), [new JilConnection(job3, job1, "s")]);
-                assert.deepEqual(builder.getDependencies(job4), [
-                    new JilConnection(job4, job1, "s"),
-                    new JilConnection(job4, job2, "n"),
-                    new JilConnection(job4, box1, "s"),
-                    new JilConnection(job4, box2, "s"),
-                    new JilConnection(job4, job3, "f"),
-                ]);
-                assert.deepEqual(builder.getConnections(), [
-                    new JilConnection(job2, job1, "s"),
-                    new JilConnection(job3, job1, "s"),
-                    new JilConnection(job4, job1, "s"),
-                    new JilConnection(job4, job2, "n"),
-                    new JilConnection(job4, box1, "s"),
-                    new JilConnection(job4, box2, "s"),
-                    new JilConnection(job4, job3, "f"),
-                ]);
+                var actualConnections = builder.getConnections();
+                var expectedConnections = [
+                    new JilConnection("job2", "job1", "s"),
+                    new JilConnection("job3", "job1", "s"),
+                    new JilConnection("job4", "job1", "s"),
+                    new JilConnection("job4", "job2", "n"),
+                    new JilConnection("job4", "box1", "s"),
+                    new JilConnection("job4", "box2", "s"),
+                    new JilConnection("job4", "job3", "f"),
+                ];
+                $.each(actualConnections, function(i, actualConnection) {
+                    assert.deepEqual(actualConnection, expectedConnections[i], "Connection number " + i);
+                });
             });
 
             QUnit.test("draw", function( assert ) {
@@ -242,17 +322,23 @@ delete_job: AAA
 delete_machine: BBB
     
 /* 
-* Job 1
+* Box1s 1
 */
 
 insert_job: box1
 job_type: b
 
-/* Job 1_2 */
+/* Job 1_1 */
 
-insert_job: job1_2 /* Another comment */
+insert_job: job1_1 /* Another comment */
 job_type: c
+box: box1
 command: start "/* 'some'thing */"
+
+insert_job: job1_2
+job_type: c
+box: box1
+condition: s(job1_1)
     </code>
     <hr/>
     <code id="removeCommentsResult">
@@ -266,9 +352,15 @@ job_type: b
 
 
 
-insert_job: job1_2 
+insert_job: job1_1 
 job_type: c
+box: box1
 command: start ""
+
+insert_job: job1_2
+job_type: c
+box: box1
+condition: s(job1_1)
     </code>
     <hr/>
     <code id="quoteValuesResult">
