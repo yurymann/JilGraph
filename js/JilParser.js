@@ -10,6 +10,7 @@ function JilParser() {
         "delete_job",
     ]);
     this.externalBoxName = "External_Jobs";
+    this.prefixToStrip = "PREFIX_";
 }
 
 JilParser.prototype.removeComments = function(jilText) {
@@ -28,7 +29,7 @@ JilParser.prototype.parse = function(jilText) {
     while((match = reg.exec(jilText)) !== null) {
         var line = match[0].trim(); // Escape quotes
         var propName = line.match(/\w+:/)[0].replace(":", "");
-        var propValue = line.replace(/\w+:\s*/, "").trim();
+        var propValue = line.replace(/\w+:\s*/, "").replace(this.prefixToStrip, "").trim();
         
         if ($.inArray(propName, this.jilSectionTags) >= 0) {
             currentJob = {name: propValue};
