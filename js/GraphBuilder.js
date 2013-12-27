@@ -87,7 +87,7 @@ GraphBuilder.prototype.getJobClass = function(job, parent) {
 
 GraphBuilder.prototype.getTopLevelJobs = function() {
     return $.grep(this.jilArray, function(job) {
-        return !job.hasOwnProperty("box");
+        return !job.hasOwnProperty("box_name");
     });
 }
 
@@ -95,7 +95,7 @@ GraphBuilder.prototype.getTopLevelJobs = function() {
 // or the box has no children.
 GraphBuilder.prototype.getBoxChildren = function(box) {
     return $.grep(this.jilArray, function(job){
-        return job.box == box.name;
+        return job.box_name == box.name;
     });
 }
 

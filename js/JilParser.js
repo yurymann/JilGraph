@@ -61,9 +61,9 @@ JilParser.prototype.setDependenciesAsReferences = function(jilArray) {
         var externalBox = {
             name: this.externalBoxName,
             job_type: "b",
-            conditiong: externalJobs,
+            condition: [],
         };
-        jilArray.unshift(externalBox, jilArray);
+        jilArray.unshift(externalBox);
     }
 }
 
@@ -93,7 +93,7 @@ JilParser.prototype.insertBrackets = function(jilText) {
 // Returns an array of structures { dependencyName: "...", status: "..." }
 JilParser.prototype.parseCondition = function(conditionString) {
     var result = [];
-    var re = new RegExp(/(\w+)\s*\(\s*([^)]+)\s*\)/g);
+    var re = new RegExp(/(\w+)\s*\(\s*([^()]+)\s*\)/g);
 
     var iStatus = 1; // index of the capture group capturing the expected status of the dependency job
     var iDependency = 2; // index of the capture group capturing the name of the dependency job
@@ -112,8 +112,14 @@ JilParser.prototype.getDependencies = function(jilArray, job, externalJobs) {
     $.each(this.parseCondition(job.condition), function(i, dependencyStruct) {
         var dependency = thisParser.findJob(jilArray, dependencyStruct.dependencyName);
         if (!dependency) {
-            dependency = { name: dependencyStruct.dependencyName, job_type: "c", box: thisParser.externalBoxName};
+            dependency = { 
+                name: dependencyStruct.dependencyName, 
+                job_type: "c", 
+                box_name: thisParser.externalBoxName,
+                condition: []
+            };
             externalJobs.push(dependency);
+            jilArray.push(dependency);
         }
         result.push(new JilConnection(
             job.name,

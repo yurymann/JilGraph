@@ -40,14 +40,14 @@
                 "name": "job1_1",
                 "job_type": "c",
                 "command": 'start ""',
-                "box": "box1",
+                "box_name": "box1",
                 "condition" : [ new JilConnection("job1_1", "job0_1", "s") ],
               },
               {
                 "name": "job1_2",
                 "job_type": "c",
                 "command": 'start ""',
-                "box": "box1",
+                "box_name": "box1",
                 "condition": [],
               },
               
@@ -59,7 +59,7 @@
               {
                 "name": "job2_1",
                 "job_type": "c",
-                "box": "box2",
+                "box_name": "box2",
                 "condition" : [ 
                     new JilConnection("job2_1", "job0_1", "s"),
                     new JilConnection("job2_1", "job1_2", "s"),
@@ -90,12 +90,13 @@
             });
             
             QUnit.test("JilParser.parseCondition", function( assert ) {
-                assert.deepEqual(jilParser.parseCondition("test: s(job1) and n(job2)|(success(box1)& s(box2)) or  failure  (job3)"), [
+                assert.deepEqual(jilParser.parseCondition("test: s(job1) and n(job2)|(success(box1)& s(box2)) or  failure  (job3) and (s(job4))"), [
                     { dependencyName: "job1", status: "s" },
                     { dependencyName: "job2", status: "n" },
                     { dependencyName: "box1", status: "s" },
                     { dependencyName: "box2", status: "s" },
                     { dependencyName: "job3", status: "f" },
+                    { dependencyName: "job4", status: "s" },
                 ]);
             });
 
@@ -120,14 +121,9 @@
                 var unknownJob = {
                     "name": "unknownJob",
                     "job_type": "c",
-                    "box": "External_Jobs",
+                    "box_name": "External_Jobs",
+                    "condition": [],
                 };
-                /*
-                var externalBox = {
-                    "name": "External_Jobs",
-                    "job_type": "b",
-                }
-                */
 
                 var sourceJilArray = [ job1, job2, job3, job4 ];
                 var expectedJilArrayAfterParse = [ job1, job2, job3, job4 ];
@@ -143,12 +139,19 @@
                     new JilConnection("job3", "unknownJob", "f"),
                 ][0]);
                 assert.deepEqual(externalJobs, [unknownJob]);
-                assert.deepEqual(sourceJilArray, expectedJilArrayAfterParse);
+                assert.deepEqual(sourceJilArray, expectedJilArrayAfterParse.concat([
+                    {
+                        "name": "unknownJob",
+                        "job_type": "c",
+                        "box_name": "External_Jobs",
+                        "condition": [],
+                    },
+                ]));
             });
 
             QUnit.test( "JilParser.parse", function( assert ) {
                 var job1_1 = {
-                    "box": "box1",
+                    "box_name": "box1",
                     "command": "start \"\"",
                     "condition": [],
                     "job_type": "c",
@@ -157,17 +160,45 @@
                 var job1_2 = {
                     "name": "job1_2",
                     "job_type": "c",
-                    "box": "box1",
+                    "box_name": "box1",
+                    "condition": [
+                        new JilConnection("job1_2",  "job1_1", "s"),
+                        new JilConnection("job1_2",  "externalJob", "s"),
+                    ],
                 };
-                job1_2["condition"] = [new JilConnection("job1_2",  "job1_1", "s")];
                 var expected = [
                     {
-                        "condition": [],
+                        "name": "External_Jobs",
                         "job_type": "b",
-                        "name": "box1"
+                        "condition": [],
                     },
-                    job1_1,
-                    job1_2,
+                    {
+                        "name": "box1",
+                        "job_type": "b",
+                        "condition": [],
+                    },
+                    {
+                        "name": "job1_1",
+                        "job_type": "c",
+                        "box_name": "box1",
+                        "command": "start \"\"",
+                        "condition": [],
+                    },
+                    {
+                        "name": "job1_2",
+                        "job_type": "c",
+                        "box_name": "box1",
+                        "condition": [
+                            new JilConnection("job1_2",  "job1_1", "s"),
+                            new JilConnection("job1_2",  "externalJob", "s"),
+                        ]
+                    },
+                    {
+                        "name": "externalJob",
+                        "job_type": "c",
+                        "box_name": "External_Jobs",
+                        "condition": [],
+                    },
                 ];
                 assert.deepEqual( jilParser.parse($("#testJil1").text()), expected);
             });
@@ -332,13 +363,13 @@ job_type: b
 
 insert_job: job1_1 /* Another comment */
 job_type: c
-box: box1
+box_name: box1
 command: start "/* 'some'thing */"
 
 insert_job: job1_2
 job_type: c
-box: box1
-condition: s(job1_1)
+box_name: box1
+condition: s(job1_1) and s(externalJob)
     </code>
     <hr/>
     <code id="removeCommentsResult">
@@ -354,13 +385,13 @@ job_type: b
 
 insert_job: job1_1 
 job_type: c
-box: box1
+box_name: box1
 command: start ""
 
 insert_job: job1_2
 job_type: c
-box: box1
-condition: s(job1_1)
+box_name: box1
+condition: s(job1_1) and s(externalJob)
     </code>
     <hr/>
     <code id="quoteValuesResult">
