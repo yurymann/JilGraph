@@ -22,6 +22,7 @@ JilParser.prototype.parse = function(jilText) {
     jilText = this.removeComments(jilText);
     
     var reg = new RegExp(/^\s*\w+:.*$/gm);
+    var rePrefixToStrip = new RegExp(this.prefixToStrip, "g");
     
     var currentJob = null;
     var result = [];
@@ -29,7 +30,7 @@ JilParser.prototype.parse = function(jilText) {
     while((match = reg.exec(jilText)) !== null) {
         var line = match[0].trim(); // Escape quotes
         var propName = line.match(/\w+:/)[0].replace(":", "");
-        var propValue = line.replace(/\w+:\s*/, "").replace(this.prefixToStrip, "").trim();
+        var propValue = line.replace(/\w+:\s*/, "").replace(rePrefixToStrip, "").trim();
         
         if ($.inArray(propName, this.jilSectionTags) >= 0) {
             currentJob = {name: propValue};
