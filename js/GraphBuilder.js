@@ -106,7 +106,7 @@ GraphBuilder.prototype.addJobWithChildren = function(job, parentDiv) {
 GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
     var div = $('<div>', 
     {   id: this.idPrefix + job.name, 
-        class: this.getJobClass(job) 
+        class: "endpoint " + this.getJobClass(job)
     })
         .text(job.name)
         .appendTo(parentDiv)
