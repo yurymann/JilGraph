@@ -9,6 +9,8 @@ function GraphBuilder(jilArray, topContainer) {
     this.jilParser = new JilParser();
     this.connectorColor = 'rgb(131,8,135, 0.5)';
     this.connectorColorHighlight = 'red';
+    // Don't use this property directly, use getConnections() instead (it's lazy-loading the property). 
+    this.connections = null;
 }
 
 GraphBuilder.prototype.draw = function() {
@@ -139,10 +141,58 @@ GraphBuilder.prototype.getBoxChildren = function(box) {
 
 // Returns an array of JilConnection structures representing all jil dependencies.
 GraphBuilder.prototype.getConnections = function() {
-    var result = [];
-    var thisGraph = this;
-    $.each(this.jilArray, function(i, job) {
-        result = result.concat(job.condition);
+    if (this.connections == null) {
+        this.connections = [];
+        var thisGraph = this;
+        $.each(this.jilArray, function(i, job) {
+            thisGraph.connections = thisGraph.connections.concat(job.condition);
+        });
+    }
+    return this.connections;
+}
+
+GraphBuilder.prototype.getInboundConnections = function(job, directOnly) {
+    return this.getBoundConnections(job, directOnly, true);
+}
+
+GraphBuilder.prototype.getOutboundConnections = function(job, directOnly) {
+    return this.getBoundConnections(job, directOnly, false);
+}
+
+// Returns an array of JilConnection objects.
+// directOnly: If direct=true, only direct connections are returned.
+//             Otherwise, all descendent or ancestor connections are returned. 
+// inbound:    If inbound=true, inbound connections are returned (where target=job.name).
+//             Otherwise, outbound connections are returned (where source=job.name).
+GraphBuilder.prototype.getBoundConnections = function(job, directOnly, inbound) {
+    var found = $.grep(this.getConnections(), function(connection) {
+        return (inbound ? connection.target : connection.source) == job.name;
     });
-    return result;
+    console.log("Direct connections for " + job.name);
+    console.log(found);
+    if (!directOnly) {
+        var foundDescendants = [];
+        var thisBuilder = this;
+        $.each(found, function(i, directConnection) {
+            var newFound = thisBuilder.getBoundConnections(
+                thisBuilder.jilParser.findJob(thisBuilder.jilArray, inbound ? directConnection.source : directConnection.target),
+                directOnly,
+                inbound);
+            // Add only those from newFound which do not already exist in foundDescendants
+            foundDescendants = foundDescendants.concat(
+                $.grep(newFound, function(newFoundConn) {
+                    for (var j = 0; j < foundDescendants.length; j++) {
+                        if (newFoundConn.equals(foundDescendants[j])) {
+                            return false;
+                        }
+                    };
+                    return true;
+                })
+            );
+        });
+        found = found.concat(foundDescendants);
+    }
+    console.log("All connections for " + job.name);
+    console.log(found);
+    return found;
 }

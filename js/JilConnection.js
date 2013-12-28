@@ -11,3 +11,12 @@ function JilConnection(source, target, status) {
     this.target = target;
     this.status = status[0];
 }
+
+JilConnection.prototype.equals = function(other) {
+    for (var prop in this) {
+        if (this[prop] != other[prop]) {
+            return false;
+        }
+    };
+    return true;
+}

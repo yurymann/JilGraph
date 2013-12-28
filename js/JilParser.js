@@ -79,8 +79,7 @@ JilParser.prototype.validate = function(jilArray) {
 JilParser.prototype.checkForCircularDependencies = function(dependentJobs, allParents) {
     $.each(dependentJobs, function(i, parentJob) {
         if ($.inArray(parentJob, allParents)) {
-            var allParentNames = [];
-            $.each(allParents, function(i, job) { allParentNames.push(job.name) });
+            var allParentNames = $.map(allParents, function(i, job) { return job.name });
             throw new Error("Circular dependency found: " + allParentNames.join(", "));
         }
     });
