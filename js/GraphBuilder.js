@@ -143,8 +143,8 @@ GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
         .text(job.name)
         .appendTo(parentDiv)
         .click(function (event) {
-            if (job == thisGraph.selectedJob) {
-                thisGraph.setSelectedDependencyLevel(event.shiftKey ? -1 : 1);
+        	if (job == thisGraph.selectedJob) {
+                thisGraph.setSelectedDependencyLevel(thisGraph.selectedDependencyLevel + event.shiftKey ? -1 : 1);
             } else {
                 thisGraph.setSelectedDependencyLevel(0);
                 thisGraph.selectedJob = job;
@@ -241,13 +241,12 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
     if (level <= 0) {
         this.selectedDependencyLevel = 0;
         $.each(jsPlumb.getConnections(), function(i, plumbConn) {
-            if (plumbConn.hasType("inbound") || plumbConn.hasType("outbound")) {
-            	plumbConn.removeType("inbound").removeType("outbound");
-            }
+            if (plumbConn.hasType("inbound")) { plumbConn.removeType("inbound"); };
+            if (plumbConn.hasType("outbound")) { plumbConn.removeType("outbound"); };
         });
     } else {
         var inboundConnections = this.getInboundConnections(this.selectedJob, level);
-        var outboundConnections = this.getInboundConnections(this.selectedJob, level);
+        var outboundConnections = this.getOutboundConnections(this.selectedJob, level);
 
     	var anyUpdated = false;
         var updateHighlightedConnections = function(connectionsToHighlight, connectionType) {
@@ -255,8 +254,10 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
             $.each(jsPlumb.getConnections(), function(i, plumbConn) {
                 var toHighlight = false;
                 for (var i = 0; i < connectionsToHighlight.length; i++) {
-                    if (thisGraph.addIdPrefix(connectionsToHighlight[i].source) == plumbConn.source && thisGraph.addIdPrefix(connectionsToHighlight[i].target) == plumbConn.target) {
-                        contains = true;
+                    if (thisGraph.addIdPrefix(connectionsToHighlight[i].source) == plumbConn.source.id 
+                    		&& thisGraph.addIdPrefix(connectionsToHighlight[i].target) == plumbConn.target.id) 
+                    {
+                    	toHighlight = true;
                         break;
                     }
                 }
