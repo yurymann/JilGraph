@@ -1,7 +1,7 @@
  <head>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../jslib/jquery.jsPlumb-1.5.4-min.js"></script>
+    <script type="text/javascript" src="../jslib/jquery.jsPlumb-1.5.5-min.js"></script>
 
 	<script type="text/javascript" src="../js/jilParser.js"></script>
     <script type="text/javascript" src="../js/JilConnection.js"></script>
@@ -15,9 +15,14 @@
         
         $( document ).ready(function() {
             try {
-                var parser = new JilParser();
-                var builder = new GraphBuilder(parser.parse($("#sourceJil").text()), $("#graphContainer"));
-                builder.draw();
+                var iFileName = 2; // index of the capture group of in the regex
+                var match = /(\?|&)jil=([^&]*)/.exec(decodeURIComponent(document.location.search));
+                var sourceJilFile = (match) ? match[iFileName] : null;
+                $("#sourceJil").load(sourceJilFile, function() {
+                    var parser = new JilParser();
+                    var builder = new GraphBuilder(parser.parse($("#sourceJil").text()), $("#graphContainer"));
+                    builder.draw();
+                });
             } catch (e) {
                 window.onload = function() { window.scrollTo(0, 0); }
                 $("#errorPane").append(getErrorText(e)).css("color", "red");
