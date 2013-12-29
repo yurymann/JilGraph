@@ -152,9 +152,7 @@ GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
         	if (job == thisGraph.selectedJob) {
                 thisGraph.setSelectedDependencyLevel(thisGraph.selectedDependencyLevel + event.shiftKey ? -1 : 1);
             } else {
-                thisGraph.setSelectedDependencyLevel(0);
-                thisGraph.selectedJob = job;
-                thisGraph.setSelectedDependencyLevel(1);
+                thisGraph.setSelectedJob(job);
             };
         })
         [0];
@@ -163,6 +161,15 @@ GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
 
 GraphBuilder.prototype.addIdPrefix = function(str) {
     return this.idPrefix + str;
+};
+
+GraphBuilder.prototype.removeIdPrefix = function(str) {
+    var l = this.idPrefix.length;
+	if (str.substring(0, l) != this.idPrefix) {
+		throw new Error("Expected prefix not found (prefix: '" + this.idPrefix + "', string: '" + str + "')");
+    	
+    }
+	return str.substring(l);
 };
 
 GraphBuilder.prototype.getJobClass = function(job, parent) {
@@ -242,13 +249,21 @@ GraphBuilder.prototype.getBoundConnections = function(job, level, inbound) {
     return found;
 };
 
+// Clears all selected dependencies and selects direct dependencies of the provided job, 
+// even if the provided job is already selected. 
+GraphBuilder.prototype.setSelectedJob = function(job) {
+	this.setSelectedDependencyLevel(0);
+	this.selectedJob = job;
+	this.setSelectedDependencyLevel(1);
+}
+
 GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
     var thisGraph = this;
     if (level <= 0) {
         this.selectedDependencyLevel = 0;
         $.each(jsPlumb.getConnections(), function(i, plumbConn) {
             if (plumbConn.hasType("inbound")) { plumbConn.removeType("inbound"); };
-            if (plumbConn.hasType("outbound")) { plumbConn.removeType("outbound"); };
+            if (plumbConn.hasType("outbound")) { plumbConn.removeType("outbound"); }
         });
     } else {
         var inboundConnections = this.getInboundConnections(this.selectedJob, level);
@@ -268,7 +283,7 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
                     }
                 }
                 if (toHighlight && !plumbConn.hasType(connectionType)) {
-                    plumbConn.setType(connectionType);
+                    plumbConn.addType(connectionType);
                     if (!anyUpdated) { anyUpdated = true; };
                 } else if (!toHighlight && plumbConn.hasType(connectionType)) {
                 	plumbConn.removeType(connectionType);

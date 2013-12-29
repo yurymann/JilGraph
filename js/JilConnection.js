@@ -19,4 +19,4 @@ JilConnection.prototype.equals = function(other) {
         }
     };
     return true;
-}
+};
