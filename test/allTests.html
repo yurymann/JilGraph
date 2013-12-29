@@ -211,7 +211,7 @@
                     $(topContainer).empty();
                 }
                 return new GraphBuilder(jilObject, topContainer);
-            }
+            };
             
             QUnit.test("GraphBuilder.addJobDiv - job", function( assert ) {
                 addJobTest(assert, "c", "endpoint job");
@@ -300,29 +300,34 @@
                 var job3 = { name: "job3", job_type: "c", condition: [ new JilConnection("job3", "job2", "s") ] };
                 var jilArray = [ job0, job1, job2, job3 ];
                 var builder = initBuilder(jilArray, $("#graphContainer1")[0]);
-                assert.deepEqual(builder.getOutboundConnections(job0, true), [], "out job0, true");
-                assert.deepEqual(builder.getOutboundConnections(job0, false), [], "out job0, false");
-                assert.deepEqual(builder.getInboundConnections(job0, true), [ 
+                assert.deepEqual(builder.getOutboundConnections(job0, 1), [], "out job0, true");
+                assert.deepEqual(builder.getOutboundConnections(job0, 2), [], "out job0, false");
+                assert.deepEqual(builder.getInboundConnections(job0, 1), [ 
                     new JilConnection("job1", "job0", "s"), 
                     new JilConnection("job2", "job0", "s") 
                 ], "int job0, true");
-                assert.deepEqual(builder.getInboundConnections(job0, false), [ 
+                assert.deepEqual(builder.getInboundConnections(job0, 2), [ 
                     new JilConnection("job1", "job0", "s"), 
                     new JilConnection("job2", "job0", "s"),
                     new JilConnection("job2", "job1", "s"),
                     new JilConnection("job3", "job2", "s") 
                 ], "int job0, false");
-                assert.deepEqual(builder.getOutboundConnections(job2, true), [ 
+                assert.deepEqual(builder.getOutboundConnections(job2, 1), [ 
                     new JilConnection("job2", "job1", "s"),
                     new JilConnection("job2", "job0", "s") 
                 ], "out job2, true");
                 // job2 -> job1 should not repeat
-                assert.deepEqual(builder.getOutboundConnections(job2, false), [ 
+                assert.deepEqual(builder.getOutboundConnections(job2, 2), [ 
                     new JilConnection("job2", "job1", "s"),
                     new JilConnection("job2", "job0", "s"),
                     new JilConnection("job1", "job0", "s") 
                 ], "out job2, false");
-                assert.deepEqual(builder.getOutboundConnections(job3, false), [ 
+                assert.deepEqual(builder.getOutboundConnections(job3, 2), [ 
+                    new JilConnection("job3", "job2", "s"),
+                    new JilConnection("job2", "job1", "s"),
+                    new JilConnection("job2", "job0", "s")
+                ], "out job3, false");
+                assert.deepEqual(builder.getOutboundConnections(job3, 3), [ 
                     new JilConnection("job3", "job2", "s"),
                     new JilConnection("job2", "job1", "s"),
                     new JilConnection("job2", "job0", "s"),
