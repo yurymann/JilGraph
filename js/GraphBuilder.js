@@ -6,8 +6,8 @@ function GraphBuilder(jilArray, topContainer) {
     this.jilArray = jilArray;
     this.idPrefix = "jildiv_";
     this.jilParser = new JilParser();
-    this.connectorColor = 'rgb(131,8,135, 0.5)';
-    this.connectorColorHighlight = 'red';
+    this.connectorColor = '#58ACFA';
+    this.connectorHoverColor = '#084B8A';
 
     this.inboundConnectorColor = '#8A0829';
     this.inboundConnectorHoverColor = '#8A0829';
@@ -57,36 +57,17 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
     jsPlumb.ready(function() {
         jsPlumb.importDefaults({
             Container: $("body")
-            // Anchor: "Continuous",
-            //PaintStyle:{lineWidth:2, strokeStyle:'rgba(0,255,200,0.5)'},
-            // hoverPaintStyle:{ strokeStyle:"rgb(0, 0, 135)" },
-            //PaintStyle: { lineWidth : 2, strokeStyle : "rgba(50, 50, 200, 0.1)"},
-            //PaintStyle: { lineWidth : 2, strokeStyle : "#456"},
-            //Endpoints: [ [ "Dot", 5 ], [ "Dot", 3 ] ],
-            //Endpoint: [ "Dot", { radius: 3 } ],
-            // EndpointStyles: [
-                // { fillStyle:"#225588" }, 
-                // { fillStyle:"#558822" }
-              // ],
-            //Connector: "Flowchart",
-            //Connector: ["Bezier", { curviness: 40 }],
-            //Overlays: [ "Arrow", { location: 1 } ],
-            // PaintStyle:{lineWidth:7,strokeStyle:'rgb(131,8,135, 0.2)'},
-            // HoverPaintStyle:{ strokeStyle:"rgb(0, 0, 135)" },
-            // EndpointStyle:{ width:40, height:40 },
-            // Endpoint:"Rectangle",
-            // Connector:"Straight"
         });
         jsPlumb.registerConnectionTypes({
             basic: {
                 paintStyle: {lineWidth: 2, strokeStyle: thisBuilder.connectorColor},
                 hoverPaintStyle: { strokeStyle: thisBuilder.connectorHoverColor },
                 connector: ["Bezier", { curviness: 40 }],
+                //connector: "Flowchart",
                 detachable: false,
                 overlays:[[
                     "Arrow", 
-                    {   location: 1, width: 10, 
-                        paintStyle: { lineWidth: 1, strokeStyle: thisBuilder.connectorColor, fillStyle: thisBuilder.connectorColor }
+                    {   location: 1, width: 10
                     }
                 ]]
             },
@@ -149,6 +130,7 @@ GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
             } else {
                 thisGraph.setSelectedJob(job);
             };
+            event.stopPropagation();
         })
         [0];
     return div;
