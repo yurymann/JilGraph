@@ -8,6 +8,12 @@ function GraphBuilder(jilArray, topContainer) {
     this.jilParser = new JilParser();
     this.connectorColor = 'rgb(131,8,135, 0.5)';
     this.connectorColorHighlight = 'red';
+
+    this.inboundConnectorColor = '#8A0829';
+    this.inboundConnectorHoverColor = '#8A0829';
+    this.outboundConnectorColor = '#21610B';
+    this.outboundConnectorHoverColor = '#21610B';
+    
     // Don't use this property directly, use getConnections() instead (it's lazy-loading the property). 
     this.connections = null;
     this.selectedJob = null;
@@ -44,7 +50,7 @@ GraphBuilder.prototype.insertConnections = function() {
             //conn.getOverlays()[0].setPaintStyle({ lineWidth: 1, strokeStyle: "green" });
         });
     });    
-}
+};
 
 GraphBuilder.prototype.initialiseJsPlumb = function() {
     var thisBuilder = this;
@@ -112,7 +118,7 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
             jsPlumb.repaintEverything();
         });
     });
-}
+};
 
 GraphBuilder.prototype.swapConnectorColor = function(currentColor) {
     return (currentColor == this.connectorColor) ? 
@@ -166,13 +172,13 @@ GraphBuilder.prototype.getJobClass = function(job, parent) {
     case "b" : return "box";
     }
     throw new Error("Unknown job type: " + jobType);
-}
+};
 
 GraphBuilder.prototype.getTopLevelJobs = function() {
     return $.grep(this.jilArray, function(job) {
         return !job.hasOwnProperty("box_name");
     });
-}
+};
 
 // Returns an empty array if the provided object is not a box
 // or the box has no children.
@@ -180,7 +186,7 @@ GraphBuilder.prototype.getBoxChildren = function(box) {
     return $.grep(this.jilArray, function(job){
         return job.box_name == box.name;
     });
-}
+};
 
 // Returns an array of JilConnection structures representing all jil dependencies.
 GraphBuilder.prototype.getConnections = function() {
@@ -192,15 +198,15 @@ GraphBuilder.prototype.getConnections = function() {
         });
     }
     return this.connections;
-}
+};
 
 GraphBuilder.prototype.getInboundConnections = function(job, level) {
     return this.getBoundConnections(job, level, true);
-}
+};
 
 GraphBuilder.prototype.getOutboundConnections = function(job, level) {
     return this.getBoundConnections(job, level, false);
-}
+};
 
 // Returns an array of JilConnection objects.
 // level:   Specifies how many levels of connections to return. Level 1 means direct connections.
