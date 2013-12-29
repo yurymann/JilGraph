@@ -18,32 +18,36 @@
     -moz-transition: -moz-box-shadow 0.15s ease-in;
     -o-transition: -o-box-shadow 0.15s ease-in;
     transition: box-shadow 0.15s ease-in;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;   
 }
 
 .box {
     border: 2px solid blue;
     margin: 10px;
-    padding: 5px;
+    padding: 2px;
     margin-top: 30px;
     border-radius: 5px;
-    background-color: #C3D7E3;
+    background-color: #DDE3E6;
     z-index: 50;
     cursor: pointer;
 }
 .job {
     border: 2px solid chocolate;
-    margin: 10px;
+    margin: 15px;
     margin-left: 25px;
     margin-right: 25px;
     padding: 5px;
     display:inline-block;
-    /*float: left;*/
     border-radius: 5px;
     background: rgb(255, 255, 128);
     background: rgba(255, 255, 128, 0.8);
-/*     opacity: 0.8;
-    filter: alpha(opacity=80);
- */    z-index: 51;
+    z-index: 51;
     position: relative;
     cursor: pointer;
 }

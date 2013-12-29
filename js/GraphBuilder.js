@@ -6,13 +6,15 @@ function GraphBuilder(jilArray, topContainer) {
     this.jilArray = jilArray;
     this.idPrefix = "jildiv_";
     this.jilParser = new JilParser();
+
+    this.connectionWidth = 3;
+    
     this.connectorColor = '#58ACFA';
     this.connectorHoverColor = '#084B8A';
-
-    this.inboundConnectorColor = '#8A0829';
-    this.inboundConnectorHoverColor = '#8A0829';
-    this.outboundConnectorColor = '#21610B';
-    this.outboundConnectorHoverColor = '#21610B';
+    this.inboundConnectorColor = '#3BA617';
+    this.inboundConnectorHoverColor = '#23670C';
+    this.outboundConnectorColor = '#FF0000';
+    this.outboundConnectorHoverColor = '#BF1313';
     
     // Don't use this property directly, use getConnections() instead (it's lazy-loading the property). 
     this.connections = null;
@@ -60,7 +62,7 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
         });
         jsPlumb.registerConnectionTypes({
             basic: {
-                paintStyle: {lineWidth: 2, strokeStyle: thisBuilder.connectorColor},
+                paintStyle: {lineWidth: thisBuilder.connectionWidth, strokeStyle: thisBuilder.connectorColor},
                 hoverPaintStyle: { strokeStyle: thisBuilder.connectorHoverColor },
                 connector: ["Bezier", { curviness: 40 }],
                 //connector: "Flowchart",
@@ -72,25 +74,23 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
                 ]]
             },
             selected: {
-                paintStyle: { lineWidth: 2, dashstyle: "4 2" },
+                paintStyle: { lineWidth: thisBuilder.connectionWidth, dashstyle: "2 1" },
             },
             inbound: {
-                paintStyle: {lineWidth: 2, strokeStyle: thisBuilder.inboundConnectorColor},
+                paintStyle: {lineWidth: thisBuilder.connectionWidth, strokeStyle: thisBuilder.inboundConnectorColor},
                 hoverPaintStyle: { strokeStyle: thisBuilder.inboundConnectorHoverColor },
                 overlays:[[
                     "Arrow", 
                     {   location: 1, width: 10, 
-                        paintStyle: { lineWidth: 1, strokeStyle: thisBuilder.inboundConnectorColor, fillStyle: thisBuilder.inboundConnectorColor }
                     }
                 ]]
             },
             outbound: {
-                paintStyle: {lineWidth: 2, strokeStyle: thisBuilder.outboundConnectorColor},
+                paintStyle: {lineWidth: thisBuilder.connectionWidth, strokeStyle: thisBuilder.outboundConnectorColor},
                 hoverPaintStyle: { strokeStyle: thisBuilder.outboundConnectorHoverColor },
                 overlays:[[
                     "Arrow", 
                     {   location: 1, width: 10, 
-                        paintStyle: { lineWidth: 1, strokeStyle: thisBuilder.outboundConnectorColor, fillStyle: thisBuilder.outboundConnectorColor }
                     }
                 ]]
             }
@@ -232,7 +232,7 @@ GraphBuilder.prototype.setSelectedJob = function(job) {
 	this.setSelectedDependencyLevel(0);
 	this.selectedJob = job;
 	this.setSelectedDependencyLevel(1);
-}
+};
 
 GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
     var thisGraph = this;
