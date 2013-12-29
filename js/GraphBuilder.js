@@ -120,11 +120,6 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
     });
 };
 
-GraphBuilder.prototype.swapConnectorColor = function(currentColor) {
-    return (currentColor == this.connectorColor) ? 
-        this.connectorColorHighlight : this.connectorColor;
-};
-
 // Recursively adds a div for the job/box object.
 // Then, if the job is a box, adds divs for its children.
 GraphBuilder.prototype.addJobWithChildren = function(job, parentDiv) {
@@ -150,7 +145,7 @@ GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
         .appendTo(parentDiv)
         .click(function (event) {
         	if (job == thisGraph.selectedJob) {
-                thisGraph.setSelectedDependencyLevel(thisGraph.selectedDependencyLevel + event.shiftKey ? -1 : 1);
+                thisGraph.setSelectedDependencyLevel(thisGraph.selectedDependencyLevel + (event.shiftKey ? -1 : 1));
             } else {
                 thisGraph.setSelectedJob(job);
             };
