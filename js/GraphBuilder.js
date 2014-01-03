@@ -9,8 +9,8 @@ function GraphBuilder(jilArray, topContainer) {
 
     this.connectionWidth = 3;
     
-    this.connectorColor = '#58ACFA';
-    this.connectorHoverColor = '#084B8A';
+    this.connectorColor = '#A8D0F5';
+    this.connectorHoverColor = '#8EC1F0';
     this.inboundConnectorColor = '#3BA617';
     this.inboundConnectorHoverColor = '#23670C';
     this.outboundConnectorColor = '#FF0000';
@@ -120,7 +120,7 @@ GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
     var thisGraph = this; 
     var div = $('<div>', 
     {   id: this.idPrefix + job.name, 
-        class: "endpoint " + this.getJobClass(job)
+        class: "generic-job " + this.getJobClass(job)
     })
         .text(job.name)
         .appendTo(parentDiv)
@@ -230,8 +230,14 @@ GraphBuilder.prototype.getBoundConnections = function(job, level, inbound) {
 // even if the provided job is already selected. 
 GraphBuilder.prototype.setSelectedJob = function(job) {
 	this.setSelectedDependencyLevel(0);
+	
+	if (this.selectedJob) {
+		$("#" + this.addIdPrefix(this.selectedJob.name)).removeClass("selected-job");;
+	}
+	
 	this.selectedJob = job;
 	this.setSelectedDependencyLevel(1);
+	$("#" + this.addIdPrefix(this.selectedJob.name)).addClass("selected-job");;
 };
 
 GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {

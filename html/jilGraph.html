@@ -1,4 +1,5 @@
  <head>
+    <title>Loading...</title>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
     <script type="text/javascript" src="../jslib/jquery.jsPlumb-1.5.5-min.js"></script>
@@ -18,13 +19,15 @@
                 var iFileName = 2; // index of the capture group of in the regex
                 var match = /(\?|&)jil=([^&]*)/.exec(decodeURIComponent(document.location.search));
                 var sourceJilFile = (match) ? match[iFileName] : null;
+                $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
+                $("#title").text(sourceJilFile);
                 $("#sourceJil").load(sourceJilFile, function() {
                     var parser = new JilParser();
                     var builder = new GraphBuilder(parser.parse($("#sourceJil").text()), $("#graphContainer"));
                     builder.draw();
                 });
             } catch (e) {
-                window.onload = function() { window.scrollTo(0, 0); }
+                window.onload = function() { window.scrollTo(0, 0); };
                 $("#errorPane").append(getErrorText(e)).css("color", "red");
                 $('body').animate({scrollTop: $("#errorPane").offset().top }, 1);
             }
@@ -40,6 +43,7 @@
  </script>
  </head>
  <body>
+    <div id="title" class="title"></div>
     <div id="errorPane" class="error"></div>
     <div id="graphContainer"></div>
     <code id="sourceJil" style="display:none">
