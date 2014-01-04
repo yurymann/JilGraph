@@ -53,16 +53,18 @@ JilParser.prototype.parse = function(jilText) {
 JilParser.prototype.stripPrefix = function(jilArray) {
     var prefixToStrip = this.defaultPrefixToStrip != null ? this.defaultPrefixToStrip : this.findPrefixToStrip(jilArray);
     if (prefixToStrip != "") {
-    	var l = prefixToStrip.length;
     	// We assume here that prefixToStrip does not contain any regexp control characters.
     	var re = new RegExp("^" + prefixToStrip);
-    	for (var job in jilArray) {
-    		job.name.replace(re, "");
-        	for (var conn in job.condition) {
-        		conn.source.replace(re, "");
-        		conn.target.replace(re, "");
-        	}
-    	}
+    	$.each(jilArray, function(i, job) {
+    		job.name = job.name.replace(re, "");
+			if (job.hasOwnProperty("box_name")) {
+				job.box_name = job.box_name.replace(re, "");
+			};
+        	$.each(job.condition, function(i, conn) {
+        		conn.source = conn.source.replace(re, "");
+        		conn.target = conn.target.replace(re, "");
+        	});
+    	});
     }
 };
 
@@ -205,8 +207,9 @@ JilParser.prototype.findMostFrequentPrefix = function(jobs, prefix, totalJobNumb
 		};			
 	});
 	
-	var minimumPrefixCount = Math.max(1, totalJobNumber * this.minimumPrefixFrequency);
-	if (maxCounters[0].count <= minimumPrefixCount) {
+	// Setting 1.1 instead of exact 1 below to be able to use the strict inequality.
+	var minimumPrefixCount = Math.max(1.1, totalJobNumber * this.minimumPrefixFrequency);
+	if (maxCounters[0].count < minimumPrefixCount) {
 		return null;
 	}
 	

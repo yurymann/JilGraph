@@ -202,10 +202,62 @@ AllTests.prototype.testJilParser_validate_circular_dependencies = function(asser
 
 AllTests.prototype.testJilParser_findPrefixToStrip = function(assert) {
 	var parser = new JilParser();
+	
 	var oneJob = [ { name: "job0" } ];
+	parser.minimumPrefixFrequency = 0.7;
     assert.equal(parser.findPrefixToStrip(oneJob), "");
+    
     var jobs1 = [ { name: "job0" }, { name: "job1" }, { name: "job2" } ];
+	parser.minimumPrefixFrequency = 0.7;
     assert.equal(parser.findPrefixToStrip(jobs1), "job");
+    
+    var jobs2 = [ { name: "aaa" }, { name: "axy" }, { name: "axz" }, { name: "azz" },
+                  { name: "bxx" }, { name: "bxy" }, { name: "bxz" }, { name: "bzz" } ];
+	parser.minimumPrefixFrequency = 0.7;
+    assert.equal(parser.findPrefixToStrip(jobs2), "", "Min frequency 0.7");
+	parser.minimumPrefixFrequency = 0.5;
+    assert.equal(parser.findPrefixToStrip(jobs2), "a", "Min frequency 0.5");
+	parser.minimumPrefixFrequency = 0.3;
+    assert.equal(parser.findPrefixToStrip(jobs2), "bx", "Min frequency 0.3");
+	parser.minimumPrefixFrequency = 0.01;
+    assert.equal(parser.findPrefixToStrip(jobs2), "bx", "Min frequency 0.01");
+};
+
+AllTests.prototype.createJilArrayForStripPrefix = function() {
+	return [
+		{ name: "job0", condition: [], box_name: "joB3" },
+		{ name: "job1", condition: [ new JilConnection("job1", "joB3", "s") ] },
+		{ name: "job2", condition: [ new JilConnection("job2", "job1", "s") ] },
+		{ name: "joB3", condition: [ new JilConnection("joB3", "job2", "s") ] },
+	];
+};
+
+AllTests.prototype.testJilParser_stripPrefix = function(assert) {
+	var parser = new JilParser();
+
+	var expected1 = [
+	                    { name: "b0", condition: [], box_name: "B3" },
+	                    { name: "b1", condition: [ new JilConnection("b1", "B3", "s") ] },
+	                    { name: "b2", condition: [ new JilConnection("b2", "b1", "s") ] },
+	                    { name: "B3", condition: [ new JilConnection("B3", "b2", "s") ] },
+	                ];
+	var expected2 = [
+	                    { name: "0", condition: [], box_name: "joB3" },
+	                    { name: "1", condition: [ new JilConnection("1", "joB3", "s") ] },
+	                    { name: "2", condition: [ new JilConnection("2", "1", "s") ] },
+	                    { name: "joB3", condition: [ new JilConnection("joB3", "2", "s") ] },
+	                ];
+	
+	var jilArray;
+	jilArray = this.createJilArrayForStripPrefix();
+	parser.minimumPrefixFrequency = 0.8;
+	parser.stripPrefix(jilArray);
+	assert.deepEqual(jilArray, expected1);
+
+	jilArray = this.createJilArrayForStripPrefix();
+	parser.minimumPrefixFrequency = 0.75;
+	parser.stripPrefix(jilArray);
+	assert.deepEqual(jilArray, expected2);
 };
 
 AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
