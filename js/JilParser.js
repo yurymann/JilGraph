@@ -10,19 +10,21 @@ function JilParser() {
         "delete_job",
     ]);
     this.externalBoxName = "External_Jobs";
-    this.prefixToStrip = "PREFIX_";
-}
+    this.defaultPrefixToStrip = null;
+    
+    // The fraction of the number of occurrences of the prefix to strip in the total number of the jobs. 
+    this.minimumPrefixFrequency = 0.7;
+};
 
 JilParser.prototype.removeComments = function(jilText) {
     var commentRegexp = new RegExp("/[*]([^*]|[\r\n]|([*]+([^*/]|[\r\n])))*[*]+/", "g");
     return jilText.replace(commentRegexp, "").trim();
-}
+};
 
 JilParser.prototype.parse = function(jilText) {
     jilText = this.removeComments(jilText);
     
     var reg = new RegExp(/^\s*\w+:.*$/gm);
-    var rePrefixToStrip = new RegExp(this.prefixToStrip, "g");
     
     var currentJob = null;
     var result = [];
@@ -30,7 +32,7 @@ JilParser.prototype.parse = function(jilText) {
     while((match = reg.exec(jilText)) !== null) {
         var line = match[0].trim(); // Escape quotes
         var propName = line.match(/\w+:/)[0].replace(":", "");
-        var propValue = line.replace(/\w+:\s*/, "").replace(rePrefixToStrip, "").trim();
+        var propValue = line.replace(/\w+:\s*/, "").trim();
         
         if ($.inArray(propName, this.jilSectionTags) >= 0) {
             currentJob = {name: propValue};
@@ -43,9 +45,26 @@ JilParser.prototype.parse = function(jilText) {
     }
     
     this.setDependenciesAsReferences(result);
+    this.stripPrefix(result);
     
     return result;
-}
+};
+
+JilParser.prototype.stripPrefix = function(jilArray) {
+    var prefixToStrip = this.defaultPrefixToStrip != null ? this.defaultPrefixToStrip : this.findPrefixToStrip(jilArray);
+    if (prefixToStrip != "") {
+    	var l = prefixToStrip.length;
+    	// We assume here that prefixToStrip does not contain any regexp control characters.
+    	var re = new RegExp("^" + prefixToStrip);
+    	for (var job in jilArray) {
+    		job.name.replace(re, "");
+        	for (var conn in job.condition) {
+        		conn.source.replace(re, "");
+        		conn.target.replace(re, "");
+        	}
+    	}
+    }
+};
 
 // Replaces textual dependency conditions with references to the Job or Box objects.
 // Side-effect: if dependency conditions refer to any jobs not existing in the provided jil text, 
@@ -66,30 +85,30 @@ JilParser.prototype.setDependenciesAsReferences = function(jilArray) {
             condition: [],
         };
         jilArray.unshift(externalBox);
-    }
-}
+    };
+};
 
 JilParser.prototype.validate = function(jilArray) {
     var jobsWithDependencies = $.grep(jilArray, function(i, job) {
         return job.hasOwnProperty("condition");
     });
     checkForCircularDependencies(jobsWithDependencies, []);
-}
+};
 
 JilParser.prototype.checkForCircularDependencies = function(dependentJobs, allParents) {
     $.each(dependentJobs, function(i, parentJob) {
         if ($.inArray(parentJob, allParents)) {
-            var allParentNames = $.map(allParents, function(i, job) { return job.name });
+            var allParentNames = $.map(allParents, function(i, job) { return job.name; });
             throw new Error("Circular dependency found: " + allParentNames.join(", "));
-        }
+        };
     });
-}
+};
 
 JilParser.prototype.insertBrackets = function(jilText) {
     var resultText = "";
     
     return resultText.trim();
-}
+};
 
 // Returns an array of structures { dependencyName: "...", status: "..." }
 JilParser.prototype.parseCondition = function(conditionString) {
@@ -104,7 +123,7 @@ JilParser.prototype.parseCondition = function(conditionString) {
         result.push({ dependencyName: match[iDependency], status: match[iStatus][0] });
     };
     return result;
-}
+};
 
 // Returns an array of JilConnection objects
 JilParser.prototype.getDependencies = function(jilArray, job, externalJobs) {
@@ -129,13 +148,76 @@ JilParser.prototype.getDependencies = function(jilArray, job, externalJobs) {
         ));
     });
     return result;
-}
+};
 
 JilParser.prototype.findJob = function(jilArray, name) {
     for (var i = 0; i < jilArray.length; i++) {
         var job = jilArray[i];
         if (job.name == name) {
             return job;
-        }
-    }
-}
+        };
+    };
+};
+
+// Searches for the most frequently used common prefix of the job names, occurring with
+// the frequence greater than this.minimumPrefixFrequency.  
+JilParser.prototype.findPrefixToStrip = function(jilArray) {
+	var prefixCount = this.findMostFrequentPrefix(jilArray, "", jilArray.length);
+	return prefixCount == null ? "" : prefixCount.prefix; 
+};
+
+// Internal function.
+// Returns structure {prefix, count}, where prefix is the most frequently occurring prefix consisting 
+// of the provided prefix plus one character; count is the number of occurrences of this prefix.   
+// Returns null if it turns out that the most frequent prefix occurs less than this.minimumPrefixFrequency 
+// fraction of times among totalJobNumber. 
+// Parameters:
+//   jobs: the list of the jobs starting at least with the provided prefix; the function assumes
+//         that all the provided jobs start with this prefix.
+//   prefix: the most frequent prefix found at the previous step of the recursion. 
+JilParser.prototype.findMostFrequentPrefix = function(jobs, prefix, totalJobNumber) {
+	var prefixCounts = [];
+	$.each(jobs, function(i, job) {
+		var newPrefix = job.name.substr(0, prefix.length+1);
+		var counter = null;
+		for (var c in prefixCounts) {
+			if (prefixCounts[c].prefix == newPrefix) {
+				counter = prefixCounts[c];
+				break;
+			};
+		}
+		if (counter == null) {
+			counter = { prefix: newPrefix, count: 0, jobs: [] };
+			prefixCounts.push(counter);
+		}
+		counter.count += 1;
+		counter.jobs.push(job);
+	});
+	
+	var maxCounters = [];
+	// Find the most frequent
+	$.each(prefixCounts, function(i, counter) {
+		if (maxCounters.length == 0 || maxCounters[0].count == counter.count) {
+			maxCounters.push(counter);
+		} else if (maxCounters[0].count < counter.count) {
+			// Clear and add only this counter
+			maxCounters = [ counter ];
+		};			
+	});
+	
+	var minimumPrefixCount = Math.max(1, totalJobNumber * this.minimumPrefixFrequency);
+	if (maxCounters[0].count <= minimumPrefixCount) {
+		return null;
+	}
+	
+	// Now recursively checking next characters and selecting the returned prefix with the maximum count.
+	var mostFrequentPrefixCounter = null;
+	var thisParser = this;
+	$.each(maxCounters, function (i, counter) {
+		var nextLevelCounter = thisParser.findMostFrequentPrefix(counter.jobs, counter.prefix, totalJobNumber);
+		if (nextLevelCounter != null && (mostFrequentPrefixCounter == null || mostFrequentPrefixCounter.count < nextLevelCounter.count)) {
+			mostFrequentPrefixCounter = nextLevelCounter;
+		};
+	});
+	return mostFrequentPrefixCounter != null ? mostFrequentPrefixCounter : maxCounters[0];
+};

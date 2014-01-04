@@ -2,6 +2,9 @@
 
 function AllTests() {
     this.jilParser = new JilParser();
+    // Setting defaultPrefixToStrip to an empty string otherwise the test jil arrays
+    // having "job1", "job2" etc. will be automatically stripped of the "job" prefix. 
+    this.jilParser.defaultPrefixToStrip = "";
     
     this.testJil =
     [
@@ -161,13 +164,6 @@ AllTests.prototype.testJilParser_getDependencies = function(assert) {
 };
 
 AllTests.prototype.testJilParser_parse = function(assert) {
-    var job1_1 = { "box_name": "box1", "command": "start \"\"", "condition": [], "job_type": "c", "name": "job1_1" };
-    var job1_2 = { "name": "job1_2", "job_type": "c", "box_name": "box1",
-        "condition": [
-            new JilConnection("job1_2",  "job1_1", "s"),
-            new JilConnection("job1_2",  "externalJob", "s")
-        ],
-    };
     var expected = [
         { "name": "External_Jobs", "job_type": "b", "condition": [] },
         { "name": "box1", "job_type": "b", "condition": [] },
@@ -184,7 +180,6 @@ AllTests.prototype.testJilParser_parse = function(assert) {
 };
 
 AllTests.prototype.testJilParser_validate_circular_dependencies = function(assert) {
-    var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
     var jilArray = [
         { name: "job0", job_type: "c", condition: [] },
         { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job3", "s") ] },
@@ -201,8 +196,16 @@ AllTests.prototype.testJilParser_validate_circular_dependencies = function(asser
         { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job1", "s") ] },
     ];
     assert.throws(function() {
-    	this.jilParser.validate(jilArray);
+    	this.jilParser.validate(jilArray2);
     }, Error);
+};
+
+AllTests.prototype.testJilParser_findPrefixToStrip = function(assert) {
+	var parser = new JilParser();
+	var oneJob = [ { name: "job0" } ];
+    assert.equal(parser.findPrefixToStrip(oneJob), "");
+    var jobs1 = [ { name: "job0" }, { name: "job1" }, { name: "job2" } ];
+    assert.equal(parser.findPrefixToStrip(jobs1), "job");
 };
 
 AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
@@ -218,11 +221,11 @@ AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
 };
 
 AllTests.prototype.testGraphBuilder_addJobDiv_job = function(assert) {
-    this.addJobTest(assert, "c", "endpoint job");
+    this.addJobTest(assert, "c", "generic-job job");
 };
 
 AllTests.prototype.testGraphBuilder_addJobDiv_box = function(assert) {
-	this.addJobTest(assert, "b", "endpoint box");
+	this.addJobTest(assert, "b", "generic-job box");
 };
 
 AllTests.prototype.testGraphBuilder_getBoxChildren_not_a_box = function(assert) {
