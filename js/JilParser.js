@@ -64,8 +64,12 @@ JilParser.prototype.findJob = function(jilArray, name) {
 
 // dayOfWeek: 2-letter string specifying any single day of week
 JilParser.prototype.getJobsOnDayOfWeek = function(jilArray, dayOfWeek) {
+	dayOfWeek = dayOfWeek.trim();
+	if (dayOfWeek.length != 2) {
+		throw new Error("Unexpected day of week: '" + dayOfWeek + "'");
+	}
 	return $.grep(jilArray, function(job) {
-		return job.hasOwnProperty("days_of_week") && job.days_of_week[dayOfWeek];
+		return !job.hasOwnProperty("days_of_week") || job.days_of_week[dayOfWeek];
 	});
 };
 
@@ -260,7 +264,7 @@ function DaysOfWeek(daysOfWeekString) {
 	
 	daysOfWeekString = daysOfWeekString.trim();
 	for (var day in this) {
-		if (daysOfWeekString.search(new RegExp("(\\b" + day + "\\b|^all$)", "i")) >= 0) {
+		if (daysOfWeekString.search(new RegExp("(\\b" + day + "\\b|^all$|^$)", "i")) >= 0) {
 			this[day] = true;
 		}
 	}

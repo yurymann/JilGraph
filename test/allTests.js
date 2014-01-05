@@ -278,7 +278,7 @@ AllTests.prototype.compareDaysOfWeek = function(assert, actual, expected, messag
 };
 
 AllTests.prototype.testDaysOfWeek = function(assert) {
-	this.compareDaysOfWeek(assert, new DaysOfWeek(""), {mo: false, tu: false, we: false, th: false, fr: false, sa: false, su: false }, "Empty");
+	this.compareDaysOfWeek(assert, new DaysOfWeek(""), {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, "Empty");
 	this.compareDaysOfWeek(assert, new DaysOfWeek("all"), {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, "All");
 	this.compareDaysOfWeek(assert, new DaysOfWeek("tu su"), {mo: false, tu: true, we: false, th: false, fr: false, sa: false, su: true }, "Some");
 };
@@ -293,12 +293,31 @@ AllTests.prototype.testJilParser_setDaysOfWeek = function(assert) {
     this.jilParser._setDaysOfWeek(jilArray);
     assert.ok(this.jilParser.findJob(jilArray, "job1").hasOwnProperty("days_of_week") == false, 
     	"Absent");
-    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job2").days_of_week, {mo: false, tu: false, we: false, th: false, fr: false, sa: false, su: false }, 
+    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job2").days_of_week, {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, 
     	"Empty");
     this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job3").days_of_week, {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, 
     	"all");
     this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job4").days_of_week, {mo: false, tu: false, we: false, th: false, fr: false, sa: true, su: true }, 
 		"sa su");
+};
+
+AllTests.prototype.testJilParser_getJobsOnDayOfWeek = function(assert) {
+    var jilArray = [
+            	    { name: "job1" },
+            	    { name: "job2", days_of_week: new DaysOfWeek("") },
+            	    { name: "job3", days_of_week: new DaysOfWeek("all") },
+            	    { name: "job4", days_of_week: new DaysOfWeek("mo tu") },
+            	    { name: "job5", days_of_week: new DaysOfWeek("sa su") }
+            	];
+    var thisSuite = this;
+    var filterJobs = function(dayOfWeek) {
+    	return $.makeArray($.map(thisSuite.jilParser.getJobsOnDayOfWeek(jilArray, dayOfWeek), function(job) { 
+    		return job.name; 
+    	}));
+    };
+    assert.deepEqual(filterJobs("mo"), [ "job1", "job2", "job3", "job4" ]);
+    assert.deepEqual(filterJobs("we"), [ "job1", "job2", "job3" ]);
+    assert.deepEqual(filterJobs("su"), [ "job1", "job2", "job3", "job5" ]);
 };
 
 AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
