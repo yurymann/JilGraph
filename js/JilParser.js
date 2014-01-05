@@ -45,7 +45,10 @@ JilParser.prototype.parse = function(jilText) {
     }
     
     this._setDependenciesAsReferences(result);
+    this._setDaysOfWeek(result);
+    // This should go after _setDependenciesAsReferences
     this._stripPrefix(result);
+    this._validateAfterParsing(result);
     
     return result;
 };
@@ -57,6 +60,13 @@ JilParser.prototype.findJob = function(jilArray, name) {
             return job;
         };
     };
+};
+
+// dayOfWeek: 2-letter string specifying any single day of week
+JilParser.prototype.getJobsOnDayOfWeek = function(jilArray, dayOfWeek) {
+	return $.grep(jilArray, function(job) {
+		return job.hasOwnProperty("days_of_week") && job.days_of_week[dayOfWeek];
+	});
 };
 
 JilParser.prototype._stripPrefix = function(jilArray) {
@@ -99,19 +109,33 @@ JilParser.prototype._setDependenciesAsReferences = function(jilArray) {
     };
 };
 
-JilParser.prototype._validate = function(jilArray) {
+JilParser.prototype._setDaysOfWeek = function(jilArray) {
+	$.each(jilArray, function(i, job) {
+		if (job.hasOwnProperty("days_of_week")) {
+			job.days_of_week = new DaysOfWeek(job.days_of_week);
+		}
+	});
+};
+
+JilParser.prototype._validateAfterParsing = function(jilArray) {
     var jobsWithDependencies = $.grep(jilArray, function(i, job) {
         return job.hasOwnProperty("condition");
     });
-    checkForCircularDependencies(jobsWithDependencies, []);
+    this._checkForCircularDependencies(jilArray, jobsWithDependencies, []);
 };
 
-JilParser.prototype._checkForCircularDependencies = function(dependentJobs, allParents) {
-    $.each(dependentJobs, function(i, parentJob) {
+JilParser.prototype._checkForCircularDependencies = function(jilArray, jobs, allParents) {
+    var thisParser = this;
+	$.each(jobs, function(i, parentJob) {
         if ($.inArray(parentJob, allParents)) {
             var allParentNames = $.map(allParents, function(i, job) { return job.name; });
             throw new Error("Circular dependency found: " + allParentNames.join(", "));
         };
+        allParents.push(parentJob);
+        var childJobs = $.map(parentJob.condition, function(connection) {
+        	return this.findJob(jilArray, connection.target);
+        });
+    	thisParser._checkForCircularDependencies(jilArray, childJobs, allParents);
     });
 };
 
@@ -224,3 +248,20 @@ JilParser.prototype._findMostFrequentPrefix = function(jobs, prefix, totalJobNum
 	});
 	return mostFrequentPrefixCounter != null ? mostFrequentPrefixCounter : maxCounters[0];
 };
+
+function DaysOfWeek(daysOfWeekString) {
+	this.mo = false;
+	this.tu = false;
+	this.we = false;
+	this.th = false;
+	this.fr = false;
+	this.sa = false;
+	this.su = false;
+	
+	daysOfWeekString = daysOfWeekString.trim();
+	for (var day in this) {
+		if (daysOfWeekString.search(new RegExp("(\\b" + day + "\\b|^all$)", "i")) >= 0) {
+			this[day] = true;
+		}
+	}
+}

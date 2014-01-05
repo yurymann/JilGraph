@@ -179,24 +179,31 @@ AllTests.prototype.testJilParser_parse = function(assert) {
     assert.deepEqual(this.jilParser.parse($("#testJil1").text()), expected);
 };
 
-AllTests.prototype.testJilParser_validate_circular_dependencies = function(assert) {
-    var jilArray = [
+AllTests.prototype.testJilParser_validateAfterParsing_circularDependencies = function(assert) {
+    var jilArray1 = [
+        { name: "job0", job_type: "c", condition: [] },
+        { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job0", "s") ] }
+    ];
+    // No exceptions expected
+    this.jilParser._validateAfterParsing(jilArray1);
+    
+    var jilArray2 = [
         { name: "job0", job_type: "c", condition: [] },
         { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job3", "s") ] },
         { name: "job2", job_type: "c", condition: [ new JilConnection("job2", "job1", "s") ] },
         { name: "job3", job_type: "c", condition: [ new JilConnection("job3", "job2", "s") ] },
     ];
     assert.throws(function() {
-    	this.jilParser.validate(jilArray);
+    	this.jilParser._validateAfterParsing(jilArray2);
     }, Error);
     
     // Job dependent on itself
-    var jilArray2 = [
+    var jilArray3 = [
         { name: "job0", job_type: "c", condition: [] },
         { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job1", "s") ] },
     ];
     assert.throws(function() {
-    	this.jilParser.validate(jilArray2);
+    	this.jilParser._validateAfterParsing(jilArray3);
     }, Error);
 };
 
@@ -258,6 +265,40 @@ AllTests.prototype.testJilParser_stripPrefix = function(assert) {
 	parser.minimumPrefixFrequency = 0.75;
 	parser._stripPrefix(jilArray);
 	assert.deepEqual(jilArray, expected2);
+};
+
+AllTests.prototype.compareDaysOfWeek = function(assert, actual, expected, message) {
+	assert.equal(actual.mo, expected.mo, message);
+	assert.equal(actual.tu, expected.tu, message);
+	assert.equal(actual.we, expected.we, message);
+	assert.equal(actual.th, expected.th, message);
+	assert.equal(actual.fr, expected.fr, message);
+	assert.equal(actual.sa, expected.sa, message);
+	assert.equal(actual.su, expected.su, message);
+};
+
+AllTests.prototype.testDaysOfWeek = function(assert) {
+	this.compareDaysOfWeek(assert, new DaysOfWeek(""), {mo: false, tu: false, we: false, th: false, fr: false, sa: false, su: false }, "Empty");
+	this.compareDaysOfWeek(assert, new DaysOfWeek("all"), {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, "All");
+	this.compareDaysOfWeek(assert, new DaysOfWeek("tu su"), {mo: false, tu: true, we: false, th: false, fr: false, sa: false, su: true }, "Some");
+};
+
+AllTests.prototype.testJilParser_setDaysOfWeek = function(assert) {
+    var jilArray = [
+	    { name: "job1" },
+	    { name: "job2", days_of_week: "" },
+	    { name: "job3", days_of_week: "all" },
+	    { name: "job4", days_of_week: "sa su" }
+	];
+    this.jilParser._setDaysOfWeek(jilArray);
+    assert.ok(this.jilParser.findJob(jilArray, "job1").hasOwnProperty("days_of_week") == false, 
+    	"Absent");
+    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job2").days_of_week, {mo: false, tu: false, we: false, th: false, fr: false, sa: false, su: false }, 
+    	"Empty");
+    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job3").days_of_week, {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, 
+    	"all");
+    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job4").days_of_week, {mo: false, tu: false, we: false, th: false, fr: false, sa: true, su: true }, 
+		"sa su");
 };
 
 AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
