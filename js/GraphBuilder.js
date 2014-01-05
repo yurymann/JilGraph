@@ -21,22 +21,22 @@ function GraphBuilder(jilArray, topContainer) {
     this.selectedJob = null;
     this.selectedDependencyLevel = 0;
     
-    this.initialiseJsPlumb();
+    this._initialiseJsPlumb();
 }
 
 GraphBuilder.prototype.draw = function() {
-    this.insertDivs();
-    this.insertConnections();
+    this._insertDivs();
+    this._insertConnections();
 };
 
-GraphBuilder.prototype.insertDivs = function() {
+GraphBuilder.prototype._insertDivs = function() {
     var thisBulider = this;
     $.each(this.getTopLevelJobs(), function(i, job) {
-        thisBulider.addJobWithChildren(job, thisBulider.topContainer);
+        thisBulider._addJobWithChildren(job, thisBulider.topContainer);
     });
 };
 
-GraphBuilder.prototype.insertConnections = function() {
+GraphBuilder.prototype._insertConnections = function() {
     var thisBuilder = this;
     $.each(this.getConnections(), function(i, connection) {
         var conn = jsPlumb.connect({
@@ -54,7 +54,7 @@ GraphBuilder.prototype.insertConnections = function() {
     });    
 };
 
-GraphBuilder.prototype.initialiseJsPlumb = function() {
+GraphBuilder.prototype._initialiseJsPlumb = function() {
     var thisBuilder = this;
     jsPlumb.ready(function() {
         jsPlumb.importDefaults({
@@ -103,12 +103,12 @@ GraphBuilder.prototype.initialiseJsPlumb = function() {
 
 // Recursively adds a div for the job/box object.
 // Then, if the job is a box, adds divs for its children.
-GraphBuilder.prototype.addJobWithChildren = function(job, parentDiv) {
+GraphBuilder.prototype._addJobWithChildren = function(job, parentDiv) {
     try {
-        var div = this.addJobDiv(job, parentDiv);
+        var div = this._addJobDiv(job, parentDiv);
         var thisBulider = this;
         $.each(this.getBoxChildren(job), function(i, child) {
-            thisBulider.addJobWithChildren(child, div);
+            thisBulider._addJobWithChildren(child, div);
         });
     } catch (e) {
         throw new Error("Error when adding job '" + job.name + "' to div '" + parentDiv.id + "': " + e.message);
@@ -116,11 +116,11 @@ GraphBuilder.prototype.addJobWithChildren = function(job, parentDiv) {
 };
 
 // Creates div for the job or box and adds it to the parent container.
-GraphBuilder.prototype.addJobDiv = function(job, parentDiv) {
+GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
     var thisGraph = this; 
     var div = $('<div>', 
     {   id: this.idPrefix + job.name, 
-        class: "generic-job " + this.getJobClass(job)
+        class: "generic-job " + this._getJobClass(job)
     })
         .text(job.name)
         .appendTo(parentDiv)
@@ -149,7 +149,7 @@ GraphBuilder.prototype.removeIdPrefix = function(str) {
 	return str.substring(l);
 };
 
-GraphBuilder.prototype.getJobClass = function(job, parent) {
+GraphBuilder.prototype._getJobClass = function(job, parent) {
     var jobType = job.job_type;
     switch (jobType) {
     case "c" : return "job";

@@ -104,7 +104,7 @@ AllTests.prototype.testJilParser_findJob = function(assert) {
 };
 
 AllTests.prototype.testJilParser_parseCondition = function(assert) {
-    assert.deepEqual(this.jilParser.parseCondition("test: s(job1) and n(job2)|(success(box1)& s(box2)) or  failure  (job3) and (s(job4))"), [
+    assert.deepEqual(this.jilParser._parseCondition("test: s(job1) and n(job2)|(success(box1)& s(box2)) or  failure  (job3) and (s(job4))"), [
         { dependencyName: "job1", status: "s" },
         { dependencyName: "job2", status: "n" },
         { dependencyName: "box1", status: "s" },
@@ -142,12 +142,12 @@ AllTests.prototype.testJilParser_getDependencies = function(assert) {
     var sourceJilArray = [ job1, job2, job3, job4 ];
     var expectedJilArrayAfterParse = [ job1, job2, job3, job4 ];
     var externalJobs = [];
-    assert.deepEqual(this.jilParser.getDependencies(sourceJilArray, job1, externalJobs), []);
+    assert.deepEqual(this.jilParser._getDependencies(sourceJilArray, job1, externalJobs), []);
     assert.deepEqual(externalJobs, []);
     assert.deepEqual(sourceJilArray, expectedJilArrayAfterParse);
 
     externalJobs = [];
-    assert.deepEqual(this.jilParser.getDependencies(sourceJilArray, job3, externalJobs)[0], [
+    assert.deepEqual(this.jilParser._getDependencies(sourceJilArray, job3, externalJobs)[0], [
         new JilConnection("job3", "job1", "s"),
         new JilConnection("job3", "job4", "f"),
         new JilConnection("job3", "unknownJob", "f"),
@@ -205,22 +205,22 @@ AllTests.prototype.testJilParser_findPrefixToStrip = function(assert) {
 	
 	var oneJob = [ { name: "job0" } ];
 	parser.minimumPrefixFrequency = 0.7;
-    assert.equal(parser.findPrefixToStrip(oneJob), "");
+    assert.equal(parser._findPrefixToStrip(oneJob), "");
     
     var jobs1 = [ { name: "job0" }, { name: "job1" }, { name: "job2" } ];
 	parser.minimumPrefixFrequency = 0.7;
-    assert.equal(parser.findPrefixToStrip(jobs1), "job");
+    assert.equal(parser._findPrefixToStrip(jobs1), "job");
     
     var jobs2 = [ { name: "aaa" }, { name: "axy" }, { name: "axz" }, { name: "azz" },
                   { name: "bxx" }, { name: "bxy" }, { name: "bxz" }, { name: "bzz" } ];
 	parser.minimumPrefixFrequency = 0.7;
-    assert.equal(parser.findPrefixToStrip(jobs2), "", "Min frequency 0.7");
+    assert.equal(parser._findPrefixToStrip(jobs2), "", "Min frequency 0.7");
 	parser.minimumPrefixFrequency = 0.5;
-    assert.equal(parser.findPrefixToStrip(jobs2), "a", "Min frequency 0.5");
+    assert.equal(parser._findPrefixToStrip(jobs2), "a", "Min frequency 0.5");
 	parser.minimumPrefixFrequency = 0.3;
-    assert.equal(parser.findPrefixToStrip(jobs2), "bx", "Min frequency 0.3");
+    assert.equal(parser._findPrefixToStrip(jobs2), "bx", "Min frequency 0.3");
 	parser.minimumPrefixFrequency = 0.01;
-    assert.equal(parser.findPrefixToStrip(jobs2), "bx", "Min frequency 0.01");
+    assert.equal(parser._findPrefixToStrip(jobs2), "bx", "Min frequency 0.01");
 };
 
 AllTests.prototype.createJilArrayForStripPrefix = function() {
@@ -251,12 +251,12 @@ AllTests.prototype.testJilParser_stripPrefix = function(assert) {
 	var jilArray;
 	jilArray = this.createJilArrayForStripPrefix();
 	parser.minimumPrefixFrequency = 0.8;
-	parser.stripPrefix(jilArray);
+	parser._stripPrefix(jilArray);
 	assert.deepEqual(jilArray, expected1);
 
 	jilArray = this.createJilArrayForStripPrefix();
 	parser.minimumPrefixFrequency = 0.75;
-	parser.stripPrefix(jilArray);
+	parser._stripPrefix(jilArray);
 	assert.deepEqual(jilArray, expected2);
 };
 
@@ -264,7 +264,7 @@ AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
     var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
     var job = {name: "job1", job_type: jobType};
 
-    var div = builder.addJobDiv(job, builder.topContainer);
+    var div = builder._addJobDiv(job, builder.topContainer);
     
     assert.equal(div.id, builder.idPrefix + job.name);
     assert.equal(div.className, divClass);
@@ -309,7 +309,7 @@ AllTests.prototype.testGraphBuilder_getTopLevelJobs = function(assert) {
 AllTests.prototype.testGraphBuilder_addJobWithChildren = function(assert) {
     var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
     var jobArray = $.grep(this.testJil, function(job) { return job.name == "box1"; });
-    builder.addJobWithChildren(jobArray[0], builder.topContainer);
+    builder._addJobWithChildren(jobArray[0], builder.topContainer);
     assert.equal($(builder.topContainer).children().length, 1);
     var boxDiv = $(builder.topContainer).children()[0];
     assert.equal($(boxDiv).children().length, 2);
@@ -317,7 +317,7 @@ AllTests.prototype.testGraphBuilder_addJobWithChildren = function(assert) {
 
 AllTests.prototype.testGraphBuilder_insertDivs = function(assert) {
     var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
-    builder.insertDivs();
+    builder._insertDivs();
     assert.equal($(builder.topContainer).children().length, 3);
 };
 

@@ -44,14 +44,23 @@ JilParser.prototype.parse = function(jilText) {
         }
     }
     
-    this.setDependenciesAsReferences(result);
-    this.stripPrefix(result);
+    this._setDependenciesAsReferences(result);
+    this._stripPrefix(result);
     
     return result;
 };
 
-JilParser.prototype.stripPrefix = function(jilArray) {
-    var prefixToStrip = this.defaultPrefixToStrip != null ? this.defaultPrefixToStrip : this.findPrefixToStrip(jilArray);
+JilParser.prototype.findJob = function(jilArray, name) {
+    for (var i = 0; i < jilArray.length; i++) {
+        var job = jilArray[i];
+        if (job.name == name) {
+            return job;
+        };
+    };
+};
+
+JilParser.prototype._stripPrefix = function(jilArray) {
+    var prefixToStrip = this.defaultPrefixToStrip != null ? this.defaultPrefixToStrip : this._findPrefixToStrip(jilArray);
     if (prefixToStrip != "") {
     	// We assume here that prefixToStrip does not contain any regexp control characters.
     	var re = new RegExp("^" + prefixToStrip);
@@ -73,11 +82,11 @@ JilParser.prototype.stripPrefix = function(jilArray) {
 // the parser assumes that these are external jobs on the same Autosys instance (e.g. jobs of other applications). 
 // "Stubs" for these jobs are created and grouped into a new Autosys box, so that such external dependencies
 // could be shown on the graph. 
-JilParser.prototype.setDependenciesAsReferences = function(jilArray) {
+JilParser.prototype._setDependenciesAsReferences = function(jilArray) {
     var externalJobs = [];
     var thisParser = this;
     $.each(jilArray, function(i, job) {
-        job["condition"] = thisParser.getDependencies(jilArray, job, externalJobs);
+        job["condition"] = thisParser._getDependencies(jilArray, job, externalJobs);
     });
     
     if (externalJobs.length > 0) {
@@ -90,14 +99,14 @@ JilParser.prototype.setDependenciesAsReferences = function(jilArray) {
     };
 };
 
-JilParser.prototype.validate = function(jilArray) {
+JilParser.prototype._validate = function(jilArray) {
     var jobsWithDependencies = $.grep(jilArray, function(i, job) {
         return job.hasOwnProperty("condition");
     });
     checkForCircularDependencies(jobsWithDependencies, []);
 };
 
-JilParser.prototype.checkForCircularDependencies = function(dependentJobs, allParents) {
+JilParser.prototype._checkForCircularDependencies = function(dependentJobs, allParents) {
     $.each(dependentJobs, function(i, parentJob) {
         if ($.inArray(parentJob, allParents)) {
             var allParentNames = $.map(allParents, function(i, job) { return job.name; });
@@ -106,14 +115,14 @@ JilParser.prototype.checkForCircularDependencies = function(dependentJobs, allPa
     });
 };
 
-JilParser.prototype.insertBrackets = function(jilText) {
+JilParser.prototype._insertBrackets = function(jilText) {
     var resultText = "";
     
     return resultText.trim();
 };
 
 // Returns an array of structures { dependencyName: "...", status: "..." }
-JilParser.prototype.parseCondition = function(conditionString) {
+JilParser.prototype._parseCondition = function(conditionString) {
     var result = [];
     var re = new RegExp(/(\w+)\s*\(\s*([^()]+)\s*\)/g);
 
@@ -128,10 +137,10 @@ JilParser.prototype.parseCondition = function(conditionString) {
 };
 
 // Returns an array of JilConnection objects
-JilParser.prototype.getDependencies = function(jilArray, job, externalJobs) {
+JilParser.prototype._getDependencies = function(jilArray, job, externalJobs) {
     var result = [];
     var thisParser = this;
-    $.each(this.parseCondition(job.condition), function(i, dependencyStruct) {
+    $.each(this._parseCondition(job.condition), function(i, dependencyStruct) {
         var dependency = thisParser.findJob(jilArray, dependencyStruct.dependencyName);
         if (!dependency) {
             dependency = { 
@@ -152,19 +161,10 @@ JilParser.prototype.getDependencies = function(jilArray, job, externalJobs) {
     return result;
 };
 
-JilParser.prototype.findJob = function(jilArray, name) {
-    for (var i = 0; i < jilArray.length; i++) {
-        var job = jilArray[i];
-        if (job.name == name) {
-            return job;
-        };
-    };
-};
-
 // Searches for the most frequently used common prefix of the job names, occurring with
 // the frequence greater than this.minimumPrefixFrequency.  
-JilParser.prototype.findPrefixToStrip = function(jilArray) {
-	var prefixCount = this.findMostFrequentPrefix(jilArray, "", jilArray.length);
+JilParser.prototype._findPrefixToStrip = function(jilArray) {
+	var prefixCount = this._findMostFrequentPrefix(jilArray, "", jilArray.length);
 	return prefixCount == null ? "" : prefixCount.prefix; 
 };
 
@@ -177,7 +177,7 @@ JilParser.prototype.findPrefixToStrip = function(jilArray) {
 //   jobs: the list of the jobs starting at least with the provided prefix; the function assumes
 //         that all the provided jobs start with this prefix.
 //   prefix: the most frequent prefix found at the previous step of the recursion. 
-JilParser.prototype.findMostFrequentPrefix = function(jobs, prefix, totalJobNumber) {
+JilParser.prototype._findMostFrequentPrefix = function(jobs, prefix, totalJobNumber) {
 	var prefixCounts = [];
 	$.each(jobs, function(i, job) {
 		var newPrefix = job.name.substr(0, prefix.length+1);
@@ -217,7 +217,7 @@ JilParser.prototype.findMostFrequentPrefix = function(jobs, prefix, totalJobNumb
 	var mostFrequentPrefixCounter = null;
 	var thisParser = this;
 	$.each(maxCounters, function (i, counter) {
-		var nextLevelCounter = thisParser.findMostFrequentPrefix(counter.jobs, counter.prefix, totalJobNumber);
+		var nextLevelCounter = thisParser._findMostFrequentPrefix(counter.jobs, counter.prefix, totalJobNumber);
 		if (nextLevelCounter != null && (mostFrequentPrefixCounter == null || mostFrequentPrefixCounter.count < nextLevelCounter.count)) {
 			mostFrequentPrefixCounter = nextLevelCounter;
 		};
