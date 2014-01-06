@@ -1,0 +1,37 @@
+TODO:
+- Add exception handling while parsing, to know where it fails. 
+- Skip delete_job, to avoid duplicate ids. 
+
+
+
+All quoted text:
+(\"([^\"])*\"|\'([^\'])*\')
+
+Replace with: #####
+
+Exclude comments:
+/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/
+
+temp
+(?!\w*:\s*)((\S.*)?)(?!(\s|[\r\n])+\w+:)
+
+Each meaningful line:
+^\s*\w+:.*$
+
+Regexp for parsing dependency condition (incomplete, does not count for additional grouping brackets):
+    var re = new RegExp(/(^\s*|\s*((\band\b|\bor\b|\||\&)\s*))(\w+)\s*\(([^)]+)\s*\)\s*/g);
+    var iOperator = 4; // index of the capture group capturing the operator
+    var i = 4; // index of the capture group capturing the operator
+
+    var result;
+    var condition;
+    var newCondition = null;
+    var prevCondition = null;
+    while (m = re.exec(job.condition)) 
+    {
+        switch (m[4]) {
+        }
+        newCondition = new JilCondition();
+        result = ;
+    }
+
