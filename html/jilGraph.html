@@ -2,6 +2,7 @@
     <title>Loading...</title>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css">
     <script type="text/javascript" src="../jslib/jquery.jsPlumb-1.5.5-min.js"></script>
 
 	<script type="text/javascript" src="../js/jilParser.js"></script>
@@ -21,6 +22,7 @@
                 var sourceJilFile = (match) ? match[iFileName] : null;
                 $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
                 $("#title").text(sourceJilFile);
+                $("#daysOfWeek").buttonset();
                 $("#sourceJil").load(sourceJilFile, function() {
                     var parser = new JilParser();
                     var builder = new GraphBuilder(parser.parse($("#sourceJil").text()), $("#graphContainer"));
@@ -44,6 +46,16 @@
  </head>
  <body>
     <div id="title" class="title"></div>
+    <div id="daysOfWeek" class="no-text-selection">
+        <input type="radio" id="day_any" name="radio" checked="checked"><label for="day_any">ANY</label>
+        <input type="radio" id="day_mo" name="radio" ><label for="day_mo" class="">Monday</label>
+        <input type="radio" id="day_tu" name="radio"><label for="day_tu">Tuesday</label>
+        <input type="radio" id="day_we" name="radio"><label for="day_we">Wednesday</label>
+        <input type="radio" id="day_th" name="radio"><label for="day_th">Thursday</label>
+        <input type="radio" id="day_fr" name="radio"><label for="day_fr">Friday</label>
+        <input type="radio" id="day_sa" name="radio"><label for="day_sa">Saturday</label>
+        <input type="radio" id="day_su" name="radio"><label for="day_su">Sunday</label>
+    </div>
     <div id="errorPane" class="error"></div>
     <div id="graphContainer"></div>
     <code id="sourceJil" style="display:none">

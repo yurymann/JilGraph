@@ -19,7 +19,6 @@
     border-radius:0.5em;        
     color:black;
     padding:0.5em;
-    /* line-height: 80px;      */
     -webkit-transition: -webkit-box-shadow 0.15s ease-in;
     -moz-transition: -moz-box-shadow 0.15s ease-in;
     -o-transition: -o-box-shadow 0.15s ease-in;
@@ -39,7 +38,7 @@
     padding: 2px;
     margin-top: 30px;
     border-radius: 5px;
-    background-color: #ECF1F4;
+    background: #ECF1F4;
     z-index: 50;
     cursor: pointer;
 }
@@ -63,6 +62,11 @@
     color: #DF013A;
 }
 
+.inactive-job {
+    background: #E6E6E6;
+    border: 2px solid #A4A4A4;
+}
+
 .job:hover {
     border:2px solid chocolate;
     box-shadow: 2px 2px 19px #444;
@@ -71,6 +75,15 @@
    -moz-box-shadow: 2px 2px 19px #fff;
     background: rgb(255, 255, 128);
     background: rgba(255, 255, 128, 0.9);
+}
+
+.no-text-selection {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;   
 }
 
 /*._jsPlumb_endpoint { cursor:pointer; }*/
