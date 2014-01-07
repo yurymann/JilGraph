@@ -2,6 +2,21 @@
 ._jsPlumb_endpoint { z-index:2; }
 ._jsPlumb_overlay { z-index:3; }
 
+#topBar {
+    position: fixed;
+    background: white;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    padding-bottom: 8px;
+    width: 100%;
+    z-index: 200;
+}
+
+#content {
+    padding-top: 57px;
+}
+
 .title {
     font: Monaco;
     font-size: 2em;

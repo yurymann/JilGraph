@@ -46,19 +46,23 @@
  </script>
  </head>
  <body>
-    <div id="title" class="title"></div>
-    <div id="daysOfWeek" class="no-text-selection" hidden>
-        <input type="radio" id="day_any" name="daysOfWeek" checked="checked"><label for="day_any">ANY</label>
-        <input type="radio" id="day_mo" name="daysOfWeek" ><label for="day_mo" class="">Monday</label>
-        <input type="radio" id="day_tu" name="daysOfWeek"><label for="day_tu">Tuesday</label>
-        <input type="radio" id="day_we" name="daysOfWeek"><label for="day_we">Wednesday</label>
-        <input type="radio" id="day_th" name="daysOfWeek"><label for="day_th">Thursday</label>
-        <input type="radio" id="day_fr" name="daysOfWeek"><label for="day_fr">Friday</label>
-        <input type="radio" id="day_sa" name="daysOfWeek"><label for="day_sa">Saturday</label>
-        <input type="radio" id="day_su" name="daysOfWeek"><label for="day_su">Sunday</label>
+    <div id="topBar">
+        <div id="title" class="title"></div>
+        <div id="daysOfWeek" class="no-text-selection" hidden>
+            <input type="radio" id="day_any" name="daysOfWeek" checked="checked"><label for="day_any">ANY</label>
+            <input type="radio" id="day_mo" name="daysOfWeek" ><label for="day_mo" class="">Monday</label>
+            <input type="radio" id="day_tu" name="daysOfWeek"><label for="day_tu">Tuesday</label>
+            <input type="radio" id="day_we" name="daysOfWeek"><label for="day_we">Wednesday</label>
+            <input type="radio" id="day_th" name="daysOfWeek"><label for="day_th">Thursday</label>
+            <input type="radio" id="day_fr" name="daysOfWeek"><label for="day_fr">Friday</label>
+            <input type="radio" id="day_sa" name="daysOfWeek"><label for="day_sa">Saturday</label>
+            <input type="radio" id="day_su" name="daysOfWeek"><label for="day_su">Sunday</label>
+        </div>
     </div>
-    <div id="errorPane" class="error"></div>
-    <div id="graphContainer"></div>
+    <div id="content">
+        <div id="errorPane" class="error"></div>
+        <div id="graphContainer"></div>
+    </div>
     <code id="sourceJil" style="display:none">
    </code>
  </body>
