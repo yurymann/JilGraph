@@ -63,14 +63,27 @@ JilParser.prototype.findJob = function(jilArray, name) {
 };
 
 // dayOfWeek: 2-letter string specifying any single day of week
+// If a job is within a box, then it is considered active only on the days when both
+// the job and the parent box are active.
 JilParser.prototype.getJobsOnDayOfWeek = function(jilArray, dayOfWeek) {
 	dayOfWeek = dayOfWeek.trim();
 	if (dayOfWeek.length != 2) {
 		throw new Error("Unexpected day of week: '" + dayOfWeek + "'");
 	}
+	var thisParser = this;
 	return $.grep(jilArray, function(job) {
-		return !job.hasOwnProperty("days_of_week") || job.days_of_week[dayOfWeek];
+		return thisParser._isJobActiveOnDayOfWeek(jilArray, job, dayOfWeek); 
 	});
+};
+
+//dayOfWeek: 2-letter string specifying any single day of week
+//If a job is within a box, then it is considered active only on the days when both
+//the job and the parent box are active.
+JilParser.prototype._isJobActiveOnDayOfWeek = function(jilArray, job, dayOfWeek) {
+	return (!job.hasOwnProperty("days_of_week") || job.days_of_week[dayOfWeek]) 
+	&& (
+			!job.hasOwnProperty("box_name") || this._isJobActiveOnDayOfWeek(jilArray, this.findJob(jilArray, job.box_name), dayOfWeek)
+	);
 };
 
 JilParser.prototype._stripPrefix = function(jilArray) {

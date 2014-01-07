@@ -307,7 +307,9 @@ AllTests.prototype.testJilParser_getJobsOnDayOfWeek = function(assert) {
             	    { name: "job2", days_of_week: new DaysOfWeek("") },
             	    { name: "job3", days_of_week: new DaysOfWeek("all") },
             	    { name: "job4", days_of_week: new DaysOfWeek("mo tu") },
-            	    { name: "job5", days_of_week: new DaysOfWeek("sa su") }
+            	    { name: "job5", days_of_week: new DaysOfWeek("sa su"), box_name: "box1" }, // inside box1 and with its own days_of_week property
+            	    { name: "job6", box_name: "box1" }, // inside box1, but without days_of_week property
+            	    { name: "box1", days_of_week: new DaysOfWeek("tu su") }
             	];
     var thisSuite = this;
     var filterJobs = function(dayOfWeek) {
@@ -315,9 +317,11 @@ AllTests.prototype.testJilParser_getJobsOnDayOfWeek = function(assert) {
     		return job.name; 
     	}));
     };
-    assert.deepEqual(filterJobs("mo"), [ "job1", "job2", "job3", "job4" ]);
-    assert.deepEqual(filterJobs("we"), [ "job1", "job2", "job3" ]);
-    assert.deepEqual(filterJobs("su"), [ "job1", "job2", "job3", "job5" ]);
+    assert.deepEqual(filterJobs("mo"), [ "job1", "job2", "job3", "job4" ], "mo");
+    assert.deepEqual(filterJobs("tu"), [ "job1", "job2", "job3", "job4", "job6", "box1" ], "tu");
+    assert.deepEqual(filterJobs("we"), [ "job1", "job2", "job3" ], "we");
+    assert.deepEqual(filterJobs("sa"), [ "job1", "job2", "job3" ], "sa");
+    assert.deepEqual(filterJobs("su"), [ "job1", "job2", "job3", "job5", "job6", "box1" ], "su");
 };
 
 AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {

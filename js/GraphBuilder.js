@@ -283,3 +283,24 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
         }
     }    
 };
+
+// null or empty string or "any" mean any day of week
+GraphBuilder.prototype.setDayOfWeek = function(dayOfWeek) {
+	var activeJobs;
+	if (dayOfWeek == null || dayOfWeek == "" || dayOfWeek.toLowerCase() == "any") {
+		activeJobs = this.jilArray;
+	} else {
+		activeJobs = this.jilParser.getJobsOnDayOfWeek(this.jilArray, dayOfWeek);
+	}
+	var inactiveJobClass = "inactive-job";
+	var thisGraph = this;
+	$.each(this.jilArray, function(i, job) {
+		var isActive = $.inArray(job, activeJobs) >= 0;
+		var div = $("#" + thisGraph.addIdPrefix(job.name));
+		if (isActive && div.hasClass(inactiveJobClass)) {
+			div.removeClass(inactiveJobClass);
+		} else if (!isActive && !div.hasClass(inactiveJobClass)) {
+			div.addClass(inactiveJobClass);
+		}
+	});
+};
