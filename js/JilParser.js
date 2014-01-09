@@ -30,9 +30,9 @@ JilParser.prototype.parse = function(jilText) {
     var result = [];
     var match;
     while((match = reg.exec(jilText)) !== null) {
-        var line = match[0].trim(); // Escape quotes
+        var line = match[0].trim(); 
         var propName = line.match(/\w+:/)[0].replace(":", "");
-        var propValue = line.replace(/\w+:\s*/, "").trim();
+        var propValue = this._unquote(line.replace(/\w+:\s*/, "").trim());
         
         if ($.inArray(propName, this.jilSectionTags) >= 0) {
             currentJob = {name: propValue};
@@ -74,6 +74,11 @@ JilParser.prototype.getJobsOnDayOfWeek = function(jilArray, dayOfWeek) {
 	return $.grep(jilArray, function(job) {
 		return thisParser._isJobActiveOnDayOfWeek(jilArray, job, dayOfWeek); 
 	});
+};
+
+JilParser.prototype._unquote = function(s) {
+	var m = s.match(/^\"(.*)\"$/);
+	return m ? m[1] : s;
 };
 
 //dayOfWeek: 2-letter string specifying any single day of week

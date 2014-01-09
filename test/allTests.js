@@ -324,6 +324,16 @@ AllTests.prototype.testJilParser_getJobsOnDayOfWeek = function(assert) {
     assert.deepEqual(filterJobs("su"), [ "job1", "job2", "job3", "job5", "job6", "box1" ], "su");
 };
 
+AllTests.prototype.testJilParser_unquote = function(assert) {
+	assert.equal(this.jilParser._unquote('abc'), "abc");
+	assert.equal(this.jilParser._unquote(''), "");
+	assert.equal(this.jilParser._unquote('""'), "");
+	assert.equal(this.jilParser._unquote('"abc"'), "abc");
+	assert.equal(this.jilParser._unquote('"ab"cd"'), 'ab"cd');
+	assert.equal(this.jilParser._unquote('abc"'), 'abc"');
+	assert.equal(this.jilParser._unquote('"abc'), '"abc');
+};
+
 AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
     var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
     var job = {name: "job1", job_type: jobType};

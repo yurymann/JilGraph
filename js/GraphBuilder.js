@@ -118,8 +118,8 @@ GraphBuilder.prototype._addJobWithChildren = function(job, parentDiv) {
 // Creates div for the job or box and adds it to the parent container.
 GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
     var thisGraph = this; 
-    var div = $('<div>', 
-    {   id: this.idPrefix + job.name, 
+    var div = $('<div>', {   
+    	id: this.idPrefix + job.name, 
         class: "generic-job " + this._getJobClass(job)
     })
         .text(job.name)
@@ -133,6 +133,13 @@ GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
             event.stopPropagation();
         })
         [0];
+    if (job.start_times) {
+        $('<div>', {
+        	class: "job-props"
+        })
+        .text(job.start_times)
+        .appendTo(div);
+    }
     return div;
 };
 
@@ -293,14 +300,16 @@ GraphBuilder.prototype.setDayOfWeek = function(dayOfWeek) {
 		activeJobs = this.jilParser.getJobsOnDayOfWeek(this.jilArray, dayOfWeek);
 	}
 	var inactiveJobClass = "inactive-job";
+	var inactiveBoxClass = "inactive-box";
 	var thisGraph = this;
 	$.each(this.jilArray, function(i, job) {
 		var isActive = $.inArray(job, activeJobs) >= 0;
 		var div = $("#" + thisGraph.addIdPrefix(job.name));
-		if (isActive && div.hasClass(inactiveJobClass)) {
-			div.removeClass(inactiveJobClass);
-		} else if (!isActive && !div.hasClass(inactiveJobClass)) {
-			div.addClass(inactiveJobClass);
+		var inactiveClass = job.job_type == "b" ? inactiveBoxClass : inactiveJobClass;
+		if (isActive && div.hasClass(inactiveClass)) {
+			div.removeClass(inactiveClass);
+		} else if (!isActive && !div.hasClass(inactiveClass)) {
+			div.addClass(inactiveClass);
 		}
 	});
 };
