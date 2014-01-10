@@ -12,38 +12,38 @@ function AllTests() {
         "name": "job0_1",
         "job_type": "c",
         "command": 'start ""',
-        "condition": [],
+        "conditionArray": [],
       },
       {
         "name": "box1",
         "job_type": "b",
-        "condition": [],
+        "conditionArray": [],
       },
       {
         "name": "job1_1",
         "job_type": "c",
         "command": 'start ""',
         "box_name": "box1",
-        "condition" : [ new JilConnection("job1_1", "job0_1", "s") ],
+        "conditionArray" : [ new JilConnection("job1_1", "job0_1", "s") ],
       },
       {
         "name": "job1_2",
         "job_type": "c",
         "command": 'start ""',
         "box_name": "box1",
-        "condition": [],
+        "conditionArray": [],
       },
       
       {
         "name": "box2",
         "job_type": "b",
-        "condition": [],
+        "conditionArray": [],
       },
       {
         "name": "job2_1",
         "job_type": "c",
         "box_name": "box2",
-        "condition" : [ 
+        "conditionArray" : [ 
             new JilConnection("job2_1", "job0_1", "s"),
             new JilConnection("job2_1", "job1_2", "s"),
             new JilConnection("job2_1", "box1", "s")
@@ -136,7 +136,7 @@ AllTests.prototype.testJilParser_getDependencies = function(assert) {
         "name": "unknownJob",
         "job_type": "c",
         "box_name": "External_Jobs",
-        "condition": [],
+        "conditionArray": [],
     };
 
     var sourceJilArray = [ job1, job2, job3, job4 ];
@@ -158,40 +158,41 @@ AllTests.prototype.testJilParser_getDependencies = function(assert) {
             "name": "unknownJob",
             "job_type": "c",
             "box_name": "External_Jobs",
-            "condition": [],
+            "conditionArray": [],
         },
     ]));
 };
 
 AllTests.prototype.testJilParser_parse = function(assert) {
     var expected = [
-        { "name": "External_Jobs", "job_type": "b", "condition": [] },
-        { "name": "box1", "job_type": "b", "condition": [] },
-        { "name": "job1_1", "job_type": "c", "box_name": "box1", "command": "start \"\"", "condition": [] },
+        { "name": "External_Jobs", "job_type": "b", "conditionArray": [] },
+        { "name": "box1", "job_type": "b", "conditionArray": [] },
+        { "name": "job1_1", "job_type": "c", "box_name": "box1", "command": "start \"\"", "conditionArray": [] },
         { "name": "job1_2", "job_type": "c", "box_name": "box1", 
-            "condition": [
+            "condition": "s(job1_1) and s(externalJob)",
+        	"conditionArray": [
                 new JilConnection("job1_2",  "job1_1", "s"),
                 new JilConnection("job1_2",  "externalJob", "s"),
             ]
         },
-        { "name": "externalJob", "job_type": "c", "box_name": "External_Jobs", "condition": [] },
+        { "name": "externalJob", "job_type": "c", "box_name": "External_Jobs", "conditionArray": [] },
     ];
     assert.deepEqual(this.jilParser.parse($("#testJil1").text()), expected);
 };
 
 AllTests.prototype.testJilParser_validateAfterParsing_circularDependencies = function(assert) {
     var jilArray1 = [
-        { name: "job0", job_type: "c", condition: [] },
-        { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job0", "s") ] }
+        { name: "job0", job_type: "c", conditionArray: [] },
+        { name: "job1", job_type: "c", conditionArray: [ new JilConnection("job1", "job0", "s") ] }
     ];
     // No exceptions expected
     this.jilParser._validateAfterParsing(jilArray1);
     
     var jilArray2 = [
-        { name: "job0", job_type: "c", condition: [] },
-        { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job3", "s") ] },
-        { name: "job2", job_type: "c", condition: [ new JilConnection("job2", "job1", "s") ] },
-        { name: "job3", job_type: "c", condition: [ new JilConnection("job3", "job2", "s") ] },
+        { name: "job0", job_type: "c", conditionArray: [] },
+        { name: "job1", job_type: "c", conditionArray: [ new JilConnection("job1", "job3", "s") ] },
+        { name: "job2", job_type: "c", conditionArray: [ new JilConnection("job2", "job1", "s") ] },
+        { name: "job3", job_type: "c", conditionArray: [ new JilConnection("job3", "job2", "s") ] },
     ];
     assert.throws(function() {
     	this.jilParser._validateAfterParsing(jilArray2);
@@ -199,8 +200,8 @@ AllTests.prototype.testJilParser_validateAfterParsing_circularDependencies = fun
     
     // Job dependent on itself
     var jilArray3 = [
-        { name: "job0", job_type: "c", condition: [] },
-        { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job1", "s") ] },
+        { name: "job0", job_type: "c", conditionArray: [] },
+        { name: "job1", job_type: "c", conditionArray: [ new JilConnection("job1", "job1", "s") ] },
     ];
     assert.throws(function() {
     	this.jilParser._validateAfterParsing(jilArray3);
@@ -232,10 +233,10 @@ AllTests.prototype.testJilParser_findPrefixToStrip = function(assert) {
 
 AllTests.prototype.createJilArrayForStripPrefix = function() {
 	return [
-		{ name: "job0", condition: [], box_name: "joB3" },
-		{ name: "job1", condition: [ new JilConnection("job1", "joB3", "s") ] },
-		{ name: "job2", condition: [ new JilConnection("job2", "job1", "s") ] },
-		{ name: "joB3", condition: [ new JilConnection("joB3", "job2", "s") ] },
+		{ name: "job0", conditionArray: [], box_name: "joB3" },
+		{ name: "job1", conditionArray: [ new JilConnection("job1", "joB3", "s") ] },
+		{ name: "job2", conditionArray: [ new JilConnection("job2", "job1", "s") ] },
+		{ name: "joB3", conditionArray: [ new JilConnection("joB3", "job2", "s") ] },
 	];
 };
 
@@ -243,16 +244,16 @@ AllTests.prototype.testJilParser_stripPrefix = function(assert) {
 	var parser = new JilParser();
 
 	var expected1 = [
-	                    { name: "b0", condition: [], box_name: "B3" },
-	                    { name: "b1", condition: [ new JilConnection("b1", "B3", "s") ] },
-	                    { name: "b2", condition: [ new JilConnection("b2", "b1", "s") ] },
-	                    { name: "B3", condition: [ new JilConnection("B3", "b2", "s") ] },
+	                    { name: "b0", conditionArray: [], box_name: "B3" },
+	                    { name: "b1", conditionArray: [ new JilConnection("b1", "B3", "s") ] },
+	                    { name: "b2", conditionArray: [ new JilConnection("b2", "b1", "s") ] },
+	                    { name: "B3", conditionArray: [ new JilConnection("B3", "b2", "s") ] },
 	                ];
 	var expected2 = [
-	                    { name: "0", condition: [], box_name: "joB3" },
-	                    { name: "1", condition: [ new JilConnection("1", "joB3", "s") ] },
-	                    { name: "2", condition: [ new JilConnection("2", "1", "s") ] },
-	                    { name: "joB3", condition: [ new JilConnection("joB3", "2", "s") ] },
+	                    { name: "0", conditionArray: [], box_name: "joB3" },
+	                    { name: "1", conditionArray: [ new JilConnection("1", "joB3", "s") ] },
+	                    { name: "2", conditionArray: [ new JilConnection("2", "1", "s") ] },
+	                    { name: "joB3", conditionArray: [ new JilConnection("joB3", "2", "s") ] },
 	                ];
 	
 	var jilArray;
@@ -396,18 +397,18 @@ AllTests.prototype.testGraphBuilder_insertDivs = function(assert) {
 };
 
 AllTests.prototype.testGraphBuilder_getConnections = function(assert) {
-    var job1 = { name: "job1", job_type: "c", condition: [] };
-    var job2 = { name: "job2", job_type: "c", condition: [ new JilConnection("job2", "job1", "s") ] };
-    var job3 = { name: "job3", job_type: "c", condition: [ new JilConnection("job3", "job1", "s") ] };
-    var job4 = { name: "job4", job_type: "c", condition: [ 
+    var job1 = { name: "job1", job_type: "c", conditionArray: [] };
+    var job2 = { name: "job2", job_type: "c", conditionArray: [ new JilConnection("job2", "job1", "s") ] };
+    var job3 = { name: "job3", job_type: "c", conditionArray: [ new JilConnection("job3", "job1", "s") ] };
+    var job4 = { name: "job4", job_type: "c", conditionArray: [ 
         new JilConnection("job4", "job1", "s"),
         new JilConnection("job4", "job2", "n"),
         new JilConnection("job4", "box1", "s"),
         new JilConnection("job4", "box2", "s"),
         new JilConnection("job4", "job3", "f"),
     ]};
-    var box1 = { name: "box1", job_type: "b", condition: [] };
-    var box2 = { name: "box2", job_type: "b", condition: [] };
+    var box1 = { name: "box1", job_type: "b", conditionArray: [] };
+    var box2 = { name: "box2", job_type: "b", conditionArray: [] };
     var jil = [job1, job2, job3, job4, box1, box2];
 
     var builder = this.initBuilder(jil, $("#graphContainer1")[0]);
@@ -427,10 +428,10 @@ AllTests.prototype.testGraphBuilder_getConnections = function(assert) {
 };
 
 AllTests.prototype.testGraphCuilder_getInbound_and_OutboundConnections = function(assert) {
-    var job0 = { name: "job0", job_type: "c", condition: [] };
-    var job1 = { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job0", "s") ] };
-    var job2 = { name: "job2", job_type: "c", condition: [ new JilConnection("job2", "job1", "s"), new JilConnection("job2", "job0", "s") ] };
-    var job3 = { name: "job3", job_type: "c", condition: [ new JilConnection("job3", "job2", "s") ] };
+    var job0 = { name: "job0", job_type: "c", conditionArray: [] };
+    var job1 = { name: "job1", job_type: "c", conditionArray: [ new JilConnection("job1", "job0", "s") ] };
+    var job2 = { name: "job2", job_type: "c", conditionArray: [ new JilConnection("job2", "job1", "s"), new JilConnection("job2", "job0", "s") ] };
+    var job3 = { name: "job3", job_type: "c", conditionArray: [ new JilConnection("job3", "job2", "s") ] };
     var jilArray = [ job0, job1, job2, job3 ];
     var builder = this.initBuilder(jilArray, $("#graphContainer1")[0]);
     assert.deepEqual(builder.getOutboundConnections(job0, 1), [], "out job0, true");
@@ -487,11 +488,11 @@ AllTests.prototype.getSortedConnectionsWithType = function(builder, type) {
 };
 
 AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert) {
-    var job0 = { name: "job0", job_type: "c", condition: [] };
-    var job1 = { name: "job1", job_type: "c", condition: [ new JilConnection("job1", "job0", "s") ] };
-    var job2 = { name: "job2", job_type: "c", condition: [ new JilConnection("job2", "job1", "s"), new JilConnection("job2", "job0", "s") ] };
-    var job3 = { name: "job3", job_type: "c", condition: [ new JilConnection("job3", "job2", "s") ] };
-    var job4 = { name: "job4", job_type: "c", condition: [ new JilConnection("job4", "job3", "s") ] };
+    var job0 = { name: "job0", job_type: "c", conditionArray: [] };
+    var job1 = { name: "job1", job_type: "c", conditionArray: [ new JilConnection("job1", "job0", "s") ] };
+    var job2 = { name: "job2", job_type: "c", conditionArray: [ new JilConnection("job2", "job1", "s"), new JilConnection("job2", "job0", "s") ] };
+    var job3 = { name: "job3", job_type: "c", conditionArray: [ new JilConnection("job3", "job2", "s") ] };
+    var job4 = { name: "job4", job_type: "c", conditionArray: [ new JilConnection("job4", "job3", "s") ] };
     var jilArray = [ job0, job1, job2, job3, job4 ];
     var builder = this.initBuilder(jilArray, $("#graphContainer1")[0]);
     builder.draw();

@@ -28,6 +28,7 @@
                     $("#daysOfWeek").buttonset().show();
                     builder.draw();
                     $("#daysOfWeek :radio").click(function(e) { builder.setDayOfWeek(this.id.replace(/^day_/, "")); } );
+                    $(document).tooltip();
                 });
             } catch (e) {
                 window.onload = function() { window.scrollTo(0, 0); };

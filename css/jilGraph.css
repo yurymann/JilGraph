@@ -124,6 +124,13 @@ body {
     font-size: 0.625em;
 }
 
+.job-props-tooltip {
+    font-size: 0.625em;
+    padding: 0.5em;
+    background: rgb(255, 255, 255);
+    background: rgba(255, 255, 255, 0.8);
+}
+
 /*._jsPlumb_endpoint { cursor:pointer; }*/
 
 .error {

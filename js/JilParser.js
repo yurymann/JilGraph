@@ -101,7 +101,7 @@ JilParser.prototype._stripPrefix = function(jilArray) {
 			if (job.hasOwnProperty("box_name")) {
 				job.box_name = job.box_name.replace(re, "");
 			};
-        	$.each(job.condition, function(i, conn) {
+        	$.each(job.conditionArray, function(i, conn) {
         		conn.source = conn.source.replace(re, "");
         		conn.target = conn.target.replace(re, "");
         	});
@@ -118,14 +118,14 @@ JilParser.prototype._setDependenciesAsReferences = function(jilArray) {
     var externalJobs = [];
     var thisParser = this;
     $.each(jilArray, function(i, job) {
-        job["condition"] = thisParser._getDependencies(jilArray, job, externalJobs);
+        job["conditionArray"] = thisParser._getDependencies(jilArray, job, externalJobs);
     });
     
     if (externalJobs.length > 0) {
         var externalBox = {
             name: this.externalBoxName,
             job_type: "b",
-            condition: [],
+            conditionArray: [],
         };
         jilArray.unshift(externalBox);
     };
@@ -141,7 +141,7 @@ JilParser.prototype._setDaysOfWeek = function(jilArray) {
 
 JilParser.prototype._validateAfterParsing = function(jilArray) {
     var jobsWithDependencies = $.grep(jilArray, function(i, job) {
-        return job.hasOwnProperty("condition");
+        return job.hasOwnProperty("conditionArray");
     });
     this._checkForCircularDependencies(jilArray, jobsWithDependencies, []);
 };
@@ -154,7 +154,7 @@ JilParser.prototype._checkForCircularDependencies = function(jilArray, jobs, all
             throw new Error("Circular dependency found: " + allParentNames.join(", "));
         };
         allParents.push(parentJob);
-        var childJobs = $.map(parentJob.condition, function(connection) {
+        var childJobs = $.map(parentJob.conditionArray, function(connection) {
         	return this.findJob(jilArray, connection.target);
         });
     	thisParser._checkForCircularDependencies(jilArray, childJobs, allParents);
@@ -193,7 +193,7 @@ JilParser.prototype._getDependencies = function(jilArray, job, externalJobs) {
                 name: dependencyStruct.dependencyName, 
                 job_type: "c", 
                 box_name: thisParser.externalBoxName,
-                condition: []
+                conditionArray: []
             };
             externalJobs.push(dependency);
             jilArray.push(dependency);

@@ -6,6 +6,7 @@ function GraphBuilder(jilArray, topContainer) {
     this.jilArray = jilArray;
     this.idPrefix = "jildiv_";
     this.jilParser = new JilParser();
+    this.visibleProps = [ "days_of_week", "condition", "command" ];
 
     this.connectionWidth = 3;
     
@@ -27,6 +28,19 @@ function GraphBuilder(jilArray, topContainer) {
 GraphBuilder.prototype.draw = function() {
     this._insertDivs();
     this._insertConnections();
+};
+
+GraphBuilder.prototype.addIdPrefix = function(str) {
+    return this.idPrefix + str;
+};
+
+GraphBuilder.prototype.removeIdPrefix = function(str) {
+    var l = this.idPrefix.length;
+	if (str.substring(0, l) != this.idPrefix) {
+		throw new Error("Expected prefix not found (prefix: '" + this.idPrefix + "', string: '" + str + "')");
+    	
+    }
+	return str.substring(l);
 };
 
 GraphBuilder.prototype._insertDivs = function() {
@@ -120,19 +134,30 @@ GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
     var thisGraph = this; 
     var div = $('<div>', {   
     	id: this.idPrefix + job.name, 
-        class: "generic-job " + this._getJobClass(job)
+        class: "generic-job " + this._getJobClass(job) 
     })
-        .text(job.name)
-        .appendTo(parentDiv)
-        .click(function (event) {
-        	if (job == thisGraph.selectedJob) {
-                thisGraph.setSelectedDependencyLevel(thisGraph.selectedDependencyLevel + (event.shiftKey ? -1 : 1));
-            } else {
-                thisGraph.setSelectedJob(job);
-            };
-            event.stopPropagation();
-        })
-        [0];
+    .text(job.name)
+    .click(function (event) {
+    	if (job == thisGraph.selectedJob) {
+            thisGraph.setSelectedDependencyLevel(thisGraph.selectedDependencyLevel + (event.shiftKey ? -1 : 1));
+        } else {
+            thisGraph.setSelectedJob(job);
+        };
+        event.stopPropagation();
+    })
+    .appendTo(parentDiv);
+    
+    var tooltipContent = this._getTooltipContent(job);
+    if (tooltipContent) {
+        div.attr("title", ""); // required for jQuery-ui to display the tooltip
+        div.tooltip({ 
+        	content: tooltipContent, 
+        	show: 1600,
+        	position: { at: "left bottom", collision: "none flip" },
+        	tooltipClass: "job-props-tooltip"
+        });
+    }
+
     if (job.start_times) {
         $('<div>', {
         	class: "job-props"
@@ -140,20 +165,21 @@ GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
         .text(job.start_times)
         .appendTo(div);
     }
-    return div;
+    return div[0];
 };
 
-GraphBuilder.prototype.addIdPrefix = function(str) {
-    return this.idPrefix + str;
-};
-
-GraphBuilder.prototype.removeIdPrefix = function(str) {
-    var l = this.idPrefix.length;
-	if (str.substring(0, l) != this.idPrefix) {
-		throw new Error("Expected prefix not found (prefix: '" + this.idPrefix + "', string: '" + str + "')");
-    	
-    }
-	return str.substring(l);
+GraphBuilder.prototype._getTooltipContent = function(job) {
+	var result = "";
+	$.each(this.visibleProps, function(i, prop) {
+		var propVal = job[prop]; 
+		if (propVal) {
+			if (!result) {
+				result = result + "<br>";
+			};
+			result = result + propVal;
+		}
+	});
+	return result;
 };
 
 GraphBuilder.prototype._getJobClass = function(job, parent) {
@@ -185,7 +211,7 @@ GraphBuilder.prototype.getConnections = function() {
         this.connections = [];
         var thisGraph = this;
         $.each(this.jilArray, function(i, job) {
-            thisGraph.connections = thisGraph.connections.concat(job.condition);
+            thisGraph.connections = thisGraph.connections.concat(job.conditionArray);
         });
     }
     return this.connections;
