@@ -173,10 +173,10 @@ GraphBuilder.prototype._getTooltipContent = function(job) {
 	$.each(this.visibleProps, function(i, prop) {
 		var propVal = job[prop]; 
 		if (propVal) {
-			if (!result) {
+			if (result) {
 				result = result + "<br>";
 			};
-			result = result + propVal;
+			result = result + prop + ": " + propVal;
 		}
 	});
 	return result;

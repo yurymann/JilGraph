@@ -23,8 +23,23 @@ body {
 
 .title {
     font: Monaco;
-    font-size: 2em;
+    font-size: 1.25em;
     color: blue;
+    padding-bottom: 0.125em;
+}
+
+.ui-button-text {
+    padding: 0.25em !important;
+    padding-left: 0.5em !important;
+    padding-right: 0.5em !important;
+}
+
+.btlabel_workday {
+    color: #0404B4 !important;
+}
+
+.btlabel_weekend {
+    color: #8A0808 !important;
 }
 
 .generic-job {

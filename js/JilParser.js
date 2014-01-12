@@ -85,7 +85,7 @@ JilParser.prototype._unquote = function(s) {
 //If a job is within a box, then it is considered active only on the days when both
 //the job and the parent box are active.
 JilParser.prototype._isJobActiveOnDayOfWeek = function(jilArray, job, dayOfWeek) {
-	return (!job.hasOwnProperty("days_of_week") || job.days_of_week[dayOfWeek]) 
+	return (!job.hasOwnProperty("days_of_weekArray") || job.days_of_weekArray[dayOfWeek]) 
 	&& (
 			!job.hasOwnProperty("box_name") || this._isJobActiveOnDayOfWeek(jilArray, this.findJob(jilArray, job.box_name), dayOfWeek)
 	);
@@ -134,7 +134,7 @@ JilParser.prototype._setDependenciesAsReferences = function(jilArray) {
 JilParser.prototype._setDaysOfWeek = function(jilArray) {
 	$.each(jilArray, function(i, job) {
 		if (job.hasOwnProperty("days_of_week")) {
-			job.days_of_week = new DaysOfWeek(job.days_of_week);
+			job.days_of_weekArray = new DaysOfWeek(job.days_of_week);
 		}
 	});
 };

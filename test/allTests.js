@@ -292,25 +292,25 @@ AllTests.prototype.testJilParser_setDaysOfWeek = function(assert) {
 	    { name: "job4", days_of_week: "sa su" }
 	];
     this.jilParser._setDaysOfWeek(jilArray);
-    assert.ok(this.jilParser.findJob(jilArray, "job1").hasOwnProperty("days_of_week") == false, 
+    assert.ok(this.jilParser.findJob(jilArray, "job1").hasOwnProperty("days_of_weekArray") == false, 
     	"Absent");
-    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job2").days_of_week, {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, 
+    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job2").days_of_weekArray, {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, 
     	"Empty");
-    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job3").days_of_week, {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, 
+    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job3").days_of_weekArray, {mo: true, tu: true, we: true, th: true, fr: true, sa: true, su: true }, 
     	"all");
-    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job4").days_of_week, {mo: false, tu: false, we: false, th: false, fr: false, sa: true, su: true }, 
+    this.compareDaysOfWeek(assert, this.jilParser.findJob(jilArray, "job4").days_of_weekArray, {mo: false, tu: false, we: false, th: false, fr: false, sa: true, su: true }, 
 		"sa su");
 };
 
 AllTests.prototype.testJilParser_getJobsOnDayOfWeek = function(assert) {
     var jilArray = [
             	    { name: "job1" },
-            	    { name: "job2", days_of_week: new DaysOfWeek("") },
-            	    { name: "job3", days_of_week: new DaysOfWeek("all") },
-            	    { name: "job4", days_of_week: new DaysOfWeek("mo tu") },
-            	    { name: "job5", days_of_week: new DaysOfWeek("sa su"), box_name: "box1" }, // inside box1 and with its own days_of_week property
+            	    { name: "job2", days_of_weekArray: new DaysOfWeek("") },
+            	    { name: "job3", days_of_weekArray: new DaysOfWeek("all") },
+            	    { name: "job4", days_of_weekArray: new DaysOfWeek("mo tu") },
+            	    { name: "job5", days_of_weekArray: new DaysOfWeek("sa su"), box_name: "box1" }, // inside box1 and with its own days_of_week property
             	    { name: "job6", box_name: "box1" }, // inside box1, but without days_of_week property
-            	    { name: "box1", days_of_week: new DaysOfWeek("tu su") }
+            	    { name: "box1", days_of_weekArray: new DaysOfWeek("tu su") }
             	];
     var thisSuite = this;
     var filterJobs = function(dayOfWeek) {
@@ -584,8 +584,21 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 	], "click job2 with Shift, was level2, outbound");
 };
 
+AllTests.prototype.testGraphBuilder_getTooltipContent = function(assert) {
+    var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
+    assert.equal(builder._getTooltipContent({days_of_week: "su", condition: "s(job1)", command: "start something"}), 
+    		"su<br>s(job1)<br>start something");
+    assert.equal(builder._getTooltipContent({command: "start something", condition: "s(job1)", days_of_week: "su"}), 
+    	"su<br>s(job1)<br>start something", "Different order");
+    assert.equal(builder._getTooltipContent({unknown_prop1: "unknown prop value", command: "start something"}), 
+        	"start something", "Excluding invisible properties");
+    assert.equal(builder._getTooltipContent({unknown_prop1: "unknown prop value"}), 
+        	"", "No visible properties");
+};
+
 AllTests.prototype.testGraphBuilder_draw = function(assert) {
     var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
     builder.draw();
     expect(0);
 };
+
