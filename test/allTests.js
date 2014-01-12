@@ -236,38 +236,42 @@ AllTests.prototype.testJilParser_findPrefixToStrip = function(assert) {
     assert.equal(parser._findPrefixToStrip(jobs2), "bx", "Min frequency 0.01");
 };
 
-AllTests.prototype.createJilArrayForStripPrefix = function() {
-	return [
-		{ name: "job0", conditionArray: [], box_name: "joB3" },
-		{ name: "job1", conditionArray: [ new JilConnection("job1", "joB3", "s") ] },
-		{ name: "job2", conditionArray: [ new JilConnection("job2", "job1", "s") ] },
-		{ name: "joB3", conditionArray: [ new JilConnection("joB3", "job2", "s") ] },
-	];
+AllTests.prototype.testJilParser_stripPrefixInString = function(assert) {
+	assert.equal(this.jilParser._stripPrefixInString("abc", "abcd 1 abc 2 abce 3 (abcf) 4 (abc)"), "d 1 abc 2 e 3 (f) 4 (abc)");
 };
 
 AllTests.prototype.testJilParser_stripPrefix = function(assert) {
 	var parser = new JilParser();
 
+	var createJilArrayForStripPrefix = function() {
+		return [
+			{ name: "job0", box_name: "joB3" },
+			{ name: "job1", condition: "s(job1) and s(joB3)" },
+			{ name: "job2", condition: "s(job2) and s(job1)" },
+			{ name: "joB3", condition: "s(joB3) and s(job2)" }
+		];
+	};
+
 	var expected1 = [
-	                    { name: "b0", conditionArray: [], box_name: "B3" },
-	                    { name: "b1", conditionArray: [ new JilConnection("b1", "B3", "s") ] },
-	                    { name: "b2", conditionArray: [ new JilConnection("b2", "b1", "s") ] },
-	                    { name: "B3", conditionArray: [ new JilConnection("B3", "b2", "s") ] },
+	                    { name: "b0", box_name: "B3" },
+	                    { name: "b1", condition: "s(b1) and s(B3)" },
+	                    { name: "b2", condition: "s(b2) and s(b1)" },
+	                    { name: "B3", condition: "s(B3) and s(b2)" },
 	                ];
 	var expected2 = [
-	                    { name: "0", conditionArray: [], box_name: "joB3" },
-	                    { name: "1", conditionArray: [ new JilConnection("1", "joB3", "s") ] },
-	                    { name: "2", conditionArray: [ new JilConnection("2", "1", "s") ] },
-	                    { name: "joB3", conditionArray: [ new JilConnection("joB3", "2", "s") ] },
+	                    { name: "0", box_name: "joB3" },
+	                    { name: "1", condition: "s(1) and s(joB3)" },
+	                    { name: "2", condition: "s(2) and s(1)" },
+	                    { name: "joB3", condition: "s(joB3) and s(2)" },
 	                ];
 	
 	var jilArray;
-	jilArray = this.createJilArrayForStripPrefix();
+	jilArray = createJilArrayForStripPrefix();
 	parser.minimumPrefixFrequency = 0.8;
 	parser._stripPrefix(jilArray);
 	assert.deepEqual(jilArray, expected1);
 
-	jilArray = this.createJilArrayForStripPrefix();
+	jilArray = createJilArrayForStripPrefix();
 	parser.minimumPrefixFrequency = 0.75;
 	parser._stripPrefix(jilArray);
 	assert.deepEqual(jilArray, expected2);

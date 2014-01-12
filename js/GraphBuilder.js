@@ -152,8 +152,8 @@ GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
         div.attr("title", ""); // required for jQuery-ui to display the tooltip
         div.tooltip({ 
         	content: tooltipContent, 
-        	show: 1200,
-        	position: { at: "left bottom", my: "left top+2", collision: "flip flip" },
+        	show: {delay: 400 },
+        	position: { at: "left bottom", my: "left top+2"},//, collision: "flip flip" },
         	tooltipClass: "job-props-tooltip"
         });
     }

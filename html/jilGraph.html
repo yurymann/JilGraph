@@ -22,18 +22,27 @@
                 var sourceJilFile = (match) ? match[iFileName] : null;
                 $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
                 $("#title").text(sourceJilFile);
-                $.get(sourceJilFile, function(data, status) {
-                    var parser = new JilParser();
-                    var builder = new GraphBuilder(parser.parse(data), $("#graphContainer"));
-                    $("#daysOfWeek").buttonset().show();
-                    builder.draw();
-                    $("#daysOfWeek :radio").click(function(e) { builder.setDayOfWeek(this.id.replace(/^day_/, "")); } );
-                    $(document).tooltip();
-                }, "text");
+                $.ajax({
+                    url: sourceJilFile,
+                    dataType: "text",
+                    success: function(data, status) {
+                        try {
+                            var parser = new JilParser();
+                            var builder = new GraphBuilder(parser.parse(data), $("#graphContainer"));
+                            $("#daysOfWeek").buttonset().show();
+                            builder.draw();
+                            $("#daysOfWeek :radio").click(function(e) { builder.setDayOfWeek(this.id.replace(/^day_/, "")); } );
+                            $(document).tooltip();
+                        } catch (e) {
+                            showError(e);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        showErrorText(errorThrown);
+                    }
+                });
             } catch (e) {
-                window.onload = function() { window.scrollTo(0, 0); };
-                $("#errorPane").append(getErrorText(e)).css("color", "red");
-                $('body').animate({scrollTop: $("#errorPane").offset().top }, 1);
+                showError(e);
             }
         });
         
@@ -43,6 +52,16 @@
                 + "File: " + errorObj.fileName + "<br>" 
                 + "Line: " + errorObj.lineNumber + "<br>" 
                 + errorObj.stack;
+        }
+        
+        function showError(e) {
+            getErrorText(e);
+        }
+        
+        function showErrorText(text) {
+            window.onload = function() { window.scrollTo(0, 0); };
+            $("#errorPane").append(text + "<hr>").css("color", "red");
+            $('body').animate({scrollTop: $("#errorPane").offset().top }, 1);
         }
  </script>
  </head>

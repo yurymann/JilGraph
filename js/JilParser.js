@@ -7,8 +7,14 @@ function JilParser() {
     this.jilSectionTags = this.jobStartTags.concat([
         "insert_machine",
         "delete_machine",
-        "delete_job",
+        "delete_job"
     ]);
+    this.propsWithPrefixedJobs = [
+    		"name",
+    		"box_name",
+    		"condition",
+    		"command"
+    ];
     this.externalBoxName = "External_Jobs";
     this.defaultPrefixToStrip = null;
     
@@ -44,10 +50,9 @@ JilParser.prototype.parse = function(jilText) {
         }
     }
     
+    this._stripPrefix(result);
     this._setDependenciesAsReferences(result);
     this._setDaysOfWeek(result);
-    // This should go after _setDependenciesAsReferences
-    this._stripPrefix(result);
     this._validateAfterParsing(result);
     
     return result;
@@ -95,18 +100,19 @@ JilParser.prototype._stripPrefix = function(jilArray) {
     var prefixToStrip = this.defaultPrefixToStrip != null ? this.defaultPrefixToStrip : this._findPrefixToStrip(jilArray);
     if (prefixToStrip != "") {
     	// We assume here that prefixToStrip does not contain any regexp control characters.
-    	var re = new RegExp("^" + prefixToStrip);
+    	var thisParser = this;
     	$.each(jilArray, function(i, job) {
-    		job.name = job.name.replace(re, "");
-			if (job.hasOwnProperty("box_name")) {
-				job.box_name = job.box_name.replace(re, "");
-			};
-        	$.each(job.conditionArray, function(i, conn) {
-        		conn.source = conn.source.replace(re, "");
-        		conn.target = conn.target.replace(re, "");
-        	});
+    		$.each(thisParser.propsWithPrefixedJobs, function(i, propName) {
+    			if (job.hasOwnProperty(propName)) {
+    				job[propName] = thisParser._stripPrefixInString(prefixToStrip, job[propName]);
+    			}
+    		});
     	});
     }
+};
+
+JilParser.prototype._stripPrefixInString = function(prefix, s) {
+	return s.replace(new RegExp("(^|\\b)(" + prefix + ")(\\B)", "gm"), "$1$3");
 };
 
 // Replaces textual dependency conditions with references to the Job or Box objects.
