@@ -152,8 +152,8 @@ GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
         div.attr("title", ""); // required for jQuery-ui to display the tooltip
         div.tooltip({ 
         	content: tooltipContent, 
-        	show: 1600,
-        	position: { at: "left bottom", collision: "none flip" },
+        	show: 1200,
+        	position: { at: "left bottom", my: "left top+2", collision: "flip flip" },
         	tooltipClass: "job-props-tooltip"
         });
     }
@@ -170,13 +170,14 @@ GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
 
 GraphBuilder.prototype._getTooltipContent = function(job) {
 	var result = "";
+	var thisBuilder = this;
 	$.each(this.visibleProps, function(i, prop) {
 		var propVal = job[prop]; 
 		if (propVal) {
 			if (result) {
 				result = result + "<br>";
 			};
-			result = result + prop + ": " + propVal;
+			result = result + prop + ": " + thisBuilder.htmlEncode(propVal);
 		}
 	});
 	return result;
@@ -315,6 +316,15 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
             this.selectedDependencyLevel = level;
         }
     }    
+};
+
+GraphBuilder.prototype.htmlEncode = function(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
 };
 
 // null or empty string or "any" mean any day of week

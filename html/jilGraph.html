@@ -22,14 +22,14 @@
                 var sourceJilFile = (match) ? match[iFileName] : null;
                 $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
                 $("#title").text(sourceJilFile);
-                $("#sourceJil").load(sourceJilFile, function() {
+                $.get(sourceJilFile, function(data, status) {
                     var parser = new JilParser();
-                    var builder = new GraphBuilder(parser.parse($("#sourceJil").text()), $("#graphContainer"));
+                    var builder = new GraphBuilder(parser.parse(data), $("#graphContainer"));
                     $("#daysOfWeek").buttonset().show();
                     builder.draw();
                     $("#daysOfWeek :radio").click(function(e) { builder.setDayOfWeek(this.id.replace(/^day_/, "")); } );
                     $(document).tooltip();
-                });
+                }, "text");
             } catch (e) {
                 window.onload = function() { window.scrollTo(0, 0); };
                 $("#errorPane").append(getErrorText(e)).css("color", "red");

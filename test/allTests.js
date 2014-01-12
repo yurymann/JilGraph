@@ -87,6 +87,11 @@ AllTests.prototype.testJilParser_removeComments = function(assert) {
 			"#removeCommentsResult").text().trim());
 };        
 
+AllTests.prototype.testBug_JilParser_removeComments_angleBrackets = function(assert) {
+    var jilText = "insert_job: job1\ncommand: <some command>";
+    assert.deepEqual(this.jilParser.removeComments(jilText), "insert_job: job1\ncommand: <some command>");
+};
+
 AllTests.prototype.testJilParser_findJob = function(assert) {
     var inputJilArray =
     [
@@ -587,13 +592,15 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 AllTests.prototype.testGraphBuilder_getTooltipContent = function(assert) {
     var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
     assert.equal(builder._getTooltipContent({days_of_week: "su", condition: "s(job1)", command: "start something"}), 
-    		"su<br>s(job1)<br>start something");
+    		"days_of_week: su<br>condition: s(job1)<br>command: start something");
     assert.equal(builder._getTooltipContent({command: "start something", condition: "s(job1)", days_of_week: "su"}), 
-    	"su<br>s(job1)<br>start something", "Different order");
+    	"days_of_week: su<br>condition: s(job1)<br>command: start something", "Different order");
     assert.equal(builder._getTooltipContent({unknown_prop1: "unknown prop value", command: "start something"}), 
-        	"start something", "Excluding invisible properties");
+    	"command: start something", "Excluding invisible properties");
     assert.equal(builder._getTooltipContent({unknown_prop1: "unknown prop value"}), 
         	"", "No visible properties");
+    assert.equal(builder._getTooltipContent({command: "<some text>"}), 
+        	"command: &lt;some text&gt;", "Value with special HTML characters");
 };
 
 AllTests.prototype.testGraphBuilder_draw = function(assert) {

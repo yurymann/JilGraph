@@ -142,8 +142,9 @@ body {
 .job-props-tooltip {
     font-size: 0.625em;
     padding: 0.5em;
-    background: rgb(255, 255, 255);
-    background: rgba(255, 255, 255, 0.8);
+    background: rgb(245, 246, 206);
+    background: rgba(245, 246, 206, 0.9);
+    max-width: 400px;
 }
 
 /*._jsPlumb_endpoint { cursor:pointer; }*/
