@@ -496,6 +496,21 @@ AllTests.prototype.getSortedConnectionsWithType = function(builder, type) {
 	});
 };
 
+AllTests.prototype.getSortedDivIdsWithClass = function(builder, className) {
+	var result = [];
+	$.each(jsPlumb.getConnections(), function(i, plumbConn) {
+		var addToResult = function(val) { 
+			if ($.inArray(val.id, result) < 0 && $(val).hasClass(className)) { 
+				result.push(val.id); 
+			} 
+		};
+		addToResult(plumbConn.source);
+		addToResult(plumbConn.target);
+	});
+	
+	return $.map(result, function(id) { return builder.removeIdPrefix(id); }).sort();
+};
+
 AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert) {
     var job0 = { name: "job0", job_type: "c", conditionArray: [] };
     var job1 = { name: "job1", job_type: "c", conditionArray: [ new JilConnection("job1", "job0", "s") ] };
@@ -512,17 +527,21 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
     assert.equal(builder.selectedJob, null, "No selected job");
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "inbound"), [], "No selected job, level 0, inbound");
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "outbound"), [], "No selected job, level 0, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [], "No selected job, level 0, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [], "No selected job, level 0, DIVs, outbound");
 
     builder.setSelectedJob(job2);
     builder.setSelectedDependencyLevel(1);
     assert.equal(builder.selectedDependencyLevel, 1);
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "inbound"), [
         { source: "job3", target: "job2" },
-	], "job2, level 1, inbound");
+	], "job2, level 0->1, inbound");
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "outbound"), [
 	    { source: "job2", target: "job0" },
 	    { source: "job2", target: "job1" },
-		], "job2, level 1, outbound");
+		], "job2, level 0->1, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job3" ], "job2, level 0->1, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1", "job3" ], "job2, level 0->1, DIVs, outbound");
 
     // Here we also verify how the optimised way of selecting dependencies works
     // (adding 2nd level dependencies to the previously selected 1st-level dependencies). 
@@ -531,24 +550,24 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "inbound"), [
         { source: "job3", target: "job2" },
         { source: "job4", target: "job3" },
-	], "job2, level 1, inbound");
+	], "job2, level 1->2, inbound");
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "outbound"), [
         { source: "job1", target: "job0" },
 	    { source: "job2", target: "job0" },
 	    { source: "job2", target: "job1" },
-    ], "job2, level 1, outbound");
+    ], "job2, level 1->2, outbound");
 
     // Here we also verify how the optimised way of selecting dependencies works
-    // (removing 2st level dependencies). 
+    // (removing 2nd level dependencies). 
     builder.setSelectedDependencyLevel(1);
     assert.equal(builder.selectedDependencyLevel, 1);
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "inbound"), [
         { source: "job3", target: "job2" },
-    ], "job2, level 1, inbound");
+    ], "job2, level 2->1, inbound");
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "outbound"), [
         { source: "job2", target: "job0" },
         { source: "job2", target: "job1" },
-    ], "job2, level 1, previous level was 2, outbound");
+    ], "job2, level 2->1, previous level was 2, outbound");
     
     $("#" + builder.addIdPrefix("job1")).trigger("click");
     assert.equal(builder.selectedJob.name, "job1");
@@ -596,15 +615,15 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 AllTests.prototype.testGraphBuilder_getTooltipContent = function(assert) {
     var builder = this.initBuilder(this.testJil, $("#graphContainer1")[0]);
     assert.equal(builder._getTooltipContent({days_of_week: "su", condition: "s(job1)", command: "start something"}), 
-    		"days_of_week: su<br>condition: s(job1)<br>command: start something");
+    	"<b>days_of_week:</b> su<br><b>condition:</b> s(job1)<br><b>command:</b> start something");
     assert.equal(builder._getTooltipContent({command: "start something", condition: "s(job1)", days_of_week: "su"}), 
-    	"days_of_week: su<br>condition: s(job1)<br>command: start something", "Different order");
+    	"<b>days_of_week:</b> su<br><b>condition:</b> s(job1)<br><b>command:</b> start something", "Different order");
     assert.equal(builder._getTooltipContent({unknown_prop1: "unknown prop value", command: "start something"}), 
-    	"command: start something", "Excluding invisible properties");
+    	"<b>command:</b> start something", "Excluding invisible properties");
     assert.equal(builder._getTooltipContent({unknown_prop1: "unknown prop value"}), 
         	"", "No visible properties");
     assert.equal(builder._getTooltipContent({command: "<some text>"}), 
-        	"command: &lt;some text&gt;", "Value with special HTML characters");
+        	"<b>command:</b> &lt;some text&gt;", "Value with special HTML characters");
 };
 
 AllTests.prototype.testGraphBuilder_draw = function(assert) {

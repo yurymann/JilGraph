@@ -106,6 +106,14 @@ body {
     color: #DF013A;
 }
 
+.inbound-job {
+    color: #3BA617;
+}
+
+.oubound-job {
+    color: #FF0000;
+}
+
 .inactive-job {
     border: 2px solid #A4A4A4;
     background: rgb(197, 197, 197);

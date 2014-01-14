@@ -177,7 +177,7 @@ GraphBuilder.prototype._getTooltipContent = function(job) {
 			if (result) {
 				result = result + "<br>";
 			};
-			result = result + prop + ": " + thisBuilder.htmlEncode(propVal);
+			result = result + "<b>" + prop + ":</b> " + thisBuilder.htmlEncode(propVal);
 		}
 	});
 	return result;
@@ -279,8 +279,8 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
     if (level <= 0) {
         this.selectedDependencyLevel = 0;
         $.each(jsPlumb.getConnections(), function(i, plumbConn) {
-            if (plumbConn.hasType("inbound")) { plumbConn.removeType("inbound"); };
-            if (plumbConn.hasType("outbound")) { plumbConn.removeType("outbound"); }
+            thisGraph.setConnectionType(plumbConn, "inbound", false);
+            thisGraph.setConnectionType(plumbConn, "outbound", false);
         });
     } else {
         var inboundConnections = this.getInboundConnections(this.selectedJob, level);
@@ -299,12 +299,18 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
                         break;
                     }
                 }
+                /*
                 if (toHighlight && !plumbConn.hasType(connectionType)) {
                     plumbConn.addType(connectionType);
-                    if (!anyUpdated) { anyUpdated = true; };
+                    anyUpdated = true;
                 } else if (!toHighlight && plumbConn.hasType(connectionType)) {
                 	plumbConn.removeType(connectionType);
-                    if (!anyUpdated) { anyUpdated = true; };
+                    anyUpdated = true;
+                }
+                */
+                if (toHighlight && !plumbConn.hasType(connectionType) || !toHighlight && plumbConn.hasType(connectionType)) {
+                    thisGraph.setConnectionType(plumbConn, connectionType, toHighlight);
+                    anyUpdated = true;
                 }
             });
         };
@@ -316,6 +322,34 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
             this.selectedDependencyLevel = level;
         }
     }    
+};
+
+// Also changes the class of the div at the far end of the connection
+// plumbConn: an instance of jsPlumb connection
+// type: string, "inbound" or "outbound";
+// add: true if the type needs to be added, false if the type needs to be removed
+GraphBuilder.prototype.setConnectionType = function(plumbConn, type, add) {
+	var farEndDiv, oppositeType;
+	switch (type) {
+	case "inbound": 
+		oppositeType = "outbound";
+		farEndDiv = plumbConn.source;
+		break;
+	case "outbound": 
+		oppositeType = "inbound";
+		farEndDiv = plumbConn.taget; 
+		break;
+	default: throw new Error("Unknown connection type: '" + type + "'");
+	}
+
+	var typeToRemove = add ? oppositeType : type;
+	plumbConn.removeType(typeToRemove);
+	$(farEndDiv).removeClass(typeToRemove + "-job");
+
+	if (add) {
+		plumbConn.addType(type);
+		$(farEndDiv).addClass(type + "-job"); 
+	}
 };
 
 GraphBuilder.prototype.htmlEncode = function(str) {
