@@ -103,14 +103,14 @@ body {
 }
 
 .selected-job {
-    color: #DF013A;
+    color: #0040FF;
 }
 
 .inbound-job {
     color: #3BA617;
 }
 
-.oubound-job {
+.outbound-job {
     color: #FF0000;
 }
 

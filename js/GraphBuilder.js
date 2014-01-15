@@ -321,35 +321,77 @@ GraphBuilder.prototype.setSelectedDependencyLevel = function(level) {
         	// No changes can mean that the maximum dependency level has been reached.
             this.selectedDependencyLevel = level;
         }
-    }    
+    }
+    this.refreshDivInOutClass();
 };
 
-// Also changes the class of the div at the far end of the connection
 // plumbConn: an instance of jsPlumb connection
 // type: string, "inbound" or "outbound";
 // add: true if the type needs to be added, false if the type needs to be removed
 GraphBuilder.prototype.setConnectionType = function(plumbConn, type, add) {
-	var farEndDiv, oppositeType;
+	var oppositeType;
 	switch (type) {
 	case "inbound": 
 		oppositeType = "outbound";
-		farEndDiv = plumbConn.source;
 		break;
 	case "outbound": 
 		oppositeType = "inbound";
-		farEndDiv = plumbConn.taget; 
 		break;
 	default: throw new Error("Unknown connection type: '" + type + "'");
 	}
 
 	var typeToRemove = add ? oppositeType : type;
 	plumbConn.removeType(typeToRemove);
-	$(farEndDiv).removeClass(typeToRemove + "-job");
-
 	if (add) {
 		plumbConn.addType(type);
-		$(farEndDiv).addClass(type + "-job"); 
 	}
+};
+
+// Iterates through all job divs and resets "inbound-job" and "outbound-job" classes
+// based on the current connection types.
+GraphBuilder.prototype.refreshDivInOutClass = function() {
+	var thisGraph = this;
+	var divMap = $.map(this.jilArray, function(job) {
+		return { div: $("#" + thisGraph.addIdPrefix(job.name))[0] };
+	});
+	
+	// Setting className attribute if the div is an end on at lest one inbound or outbound connection 
+	$.each(jsPlumb.getConnections(), function(i, plumbConn) {
+		var setClassInMap = function(div, className) {
+			var mapItem = null;
+			for (i in divMap) { 
+				if (divMap[i].div == div) { mapItem = divMap[i]; break;} 
+			};
+			if (mapItem.className != className) {
+				mapItem.className = className;
+			};
+		};
+		
+		var connType = null, farEndDiv = null;
+		if (plumbConn.hasType("inbound")) {
+			connType = "inbound";
+			farEndDiv = plumbConn.source;
+		} else if (plumbConn.hasType("outbound")) {
+			connType = "outbound";
+			farEndDiv = plumbConn.target;
+		}
+		
+		if (connType) {
+			setClassInMap(farEndDiv, connType + "-job"); 
+		};
+	});
+	
+	$.each(divMap, function(i, mapItem) {
+		if (!mapItem.className || mapItem.className == "inbound-job") {
+			$(mapItem.div).removeClass("outbound-job");
+		}
+		if (!mapItem.className || mapItem.className == "outbound-job") {
+			$(mapItem.div).removeClass("inbound-job");
+		}
+		if (mapItem.className) {
+			$(mapItem.div).addClass(mapItem.className);
+		}
+	});
 };
 
 GraphBuilder.prototype.htmlEncode = function(str) {

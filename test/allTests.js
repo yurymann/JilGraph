@@ -541,7 +541,7 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 	    { source: "job2", target: "job1" },
 		], "job2, level 0->1, outbound");
     assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job3" ], "job2, level 0->1, DIVs, inbound");
-    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1", "job3" ], "job2, level 0->1, DIVs, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1" ], "job2, level 0->1, DIVs, outbound");
 
     // Here we also verify how the optimised way of selecting dependencies works
     // (adding 2nd level dependencies to the previously selected 1st-level dependencies). 
@@ -556,6 +556,8 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 	    { source: "job2", target: "job0" },
 	    { source: "job2", target: "job1" },
     ], "job2, level 1->2, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job3", "job4" ], "job2, level 1->2, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1" ], "job2, level 1->2, DIVs, outbound");
 
     // Here we also verify how the optimised way of selecting dependencies works
     // (removing 2nd level dependencies). 
@@ -568,6 +570,8 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
         { source: "job2", target: "job0" },
         { source: "job2", target: "job1" },
     ], "job2, level 2->1, previous level was 2, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job3" ], "job2, level 2->1, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1" ], "job2, level 2->1, DIVs, outbound");
     
     $("#" + builder.addIdPrefix("job1")).trigger("click");
     assert.equal(builder.selectedJob.name, "job1");
@@ -575,6 +579,8 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
     	"click job1, inbound");
     assert.deepEqual(this.getSortedConnectionsWithType(builder, "outbound"), [{source:"job1", target:"job0"}],
     	"click job1, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job2" ], "click job1, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0" ], "click job1, DIVs, outbound");
 
     $("#" + builder.addIdPrefix("job2")).trigger("click");
     assert.equal(builder.selectedJob.name, "job2");
@@ -586,6 +592,8 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 		{ source: "job2", target: "job0" },
 		{ source: "job2", target: "job1" },
 	], "click job2 1st time, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job3" ], "click job2 1st time, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1" ], "click job2 1st time, DIVs, outbound");
 
     $("#" + builder.addIdPrefix("job2")).trigger("click");
     assert.equal(builder.selectedJob.name, "job2");
@@ -599,6 +607,8 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 		{ source: "job2", target: "job0" },
 		{ source: "job2", target: "job1" },
 	], "click job2 2nd time, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job3", "job4" ], "click job2 2nd time, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1" ], "click job2 2nd time, DIVs, outbound");
 
     $("#" + builder.addIdPrefix("job2")).trigger(new $.Event("click", {shiftKey: true}));
     assert.equal(builder.selectedJob.name, "job2");
@@ -610,6 +620,8 @@ AllTests.prototype.testGraphBuilder_setSelectedDependencyLevel = function(assert
 		{ source: "job2", target: "job0" },
 		{ source: "job2", target: "job1" },
 	], "click job2 with Shift, was level2, outbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "inbound-job"), [ "job3" ], "click job2 with Shift, was level2, DIVs, inbound");
+    assert.deepEqual(this.getSortedDivIdsWithClass(builder, "outbound-job"), [ "job0", "job1" ], "click job2 with Shift, was level2, DIVs, outbound");
 };
 
 AllTests.prototype.testGraphBuilder_getTooltipContent = function(assert) {
