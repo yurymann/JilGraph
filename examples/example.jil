@@ -1,0 +1,1225 @@
+/***********************************************************************************************************************
+ * Insert machines
+***********************************************************************************************************************/
+insert_machine: ENV_PREFIX_host1
+machine: CALC_MACHINE1
+
+/***********************************************************************************************************************
+ * Boxes
+***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_FirstFeedBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "01:00"
+days_of_week: mo, tu, we, th, fr, sa
+permission: gx, mx
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_SecondFeedBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "00:30"
+days_of_week: tu, we, th, fr, sa, su
+permission: gx, mx
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_FirstCalcBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "04:00"
+days_of_week: tu, we, th, fr, su
+permission: gx, mx
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_SecondCalcBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "04:10"
+days_of_week: tu, we, th, fr, su
+permission: gx, mx
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_ThirdCalcBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "04:20"
+days_of_week: tu, we, th, fr, su
+permission: gx, mx
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_EveningBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "21:00"
+days_of_week: su, mo, tu, we, th, fr, sa
+permission: gx, mx
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_SaturdayBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "00:45"
+days_of_week: sa
+permission: gx, mx
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_SundayBox
+job_type: b
+owner: APP_USER
+date_conditions: y
+start_times: "00:45"
+days_of_week: su
+permission: gx, mx
+timezone: "GMT"
+
+/***********************************************************************************************************************
+ * FirstFeedBox
+***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_FeedJob1
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 5
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob1.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob1.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob2
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 35
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob2.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob2.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob3
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob3.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob3.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob4
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 5
+date_conditions: y
+days_of_week: mo, tu, we, th, fr, sa
+start_times: "05:20"
+condition: notrunning(OTHER_ENV_PREFIX_ExternalJob)
+timezone: "GMT"
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob4.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob4.log"
+
+insert_job: ENV_PREFIX_FeedJob5
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 60
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob2)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob5.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob5.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob6
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 60
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob5)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob6.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob6.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob7
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 120
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob2)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob7.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob7.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob8
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 80
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob8.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob8.log"
+condition: s(ENV_PREFIX_FeedJob7)
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob9
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 150
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob9.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob9.log"
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_FeedJob10
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 150
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob10.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob10.log"
+condition: s(ENV_PREFIX_FeedJob9) and (s(ENV_PREFIX_StandaloneJob1) or s(ENV_PREFIX_FeedJob4))
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_FeedJob11
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 60
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob11.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob11.log"
+condition: s(ENV_PREFIX_FeedJob9) and (s(ENV_PREFIX_StandaloneJob1) or s(ENV_PREFIX_FeedJob4))
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_FeedJob12
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 5
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob12.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob12.log"
+condition: s(ENV_PREFIX_FeedJob10) AND s(ENV_PREFIX_FeedJob11)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_FeedJob13
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 10
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob17)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob13.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob13.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob14
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 60
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob13)
+std_err_file: "/logs/autosys/ENV_PREFIX_BondCalaclulator.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_BondCalaclulator.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob15
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_FirstFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 10
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob14)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob15.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob15.log"
+owner: APP_USER
+
+
+/***********************************************************************************************************************
+ * SecondFeedBox
+ ***********************************************************************************************************************/
+ 
+insert_job: ENV_PREFIX_FeedJob16
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob9)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob16.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob16.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob17
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 70
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob16)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob17.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob17.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob18
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob17)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob18.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob18.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob19
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob18)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob19.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob19.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob20
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+max_run_alarm: 10
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob18)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob20.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob20.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob21
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob20)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob21.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob21.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob22
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob21)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob22.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob22.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob23
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_FeedJob22)
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob23.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob23.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_FeedJob24
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SecondFeedBox
+job_type: c
+owner: APP_USER
+command: <some command>
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 10
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_FeedJob24.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_FeedJob24.log"
+condition: s(ENV_PREFIX_FeedJob22)
+timezone: "GMT"
+
+
+/***********************************************************************************************************************
+ * FirstCalcBox
+***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_CalcJob1
+job_type: c
+box_name: ENV_PREFIX_FirstCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 5
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob1.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob1.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_SecondFeedBox)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob2
+job_type: c
+box_name: ENV_PREFIX_FirstCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 45
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob2.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob2.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob1)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CachePositions
+job_type: c
+box_name: ENV_PREFIX_FirstCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 45
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CachePositions.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CachePositions.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob2)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob3
+job_type: c
+box_name: ENV_PREFIX_FirstCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 15
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob3.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob3.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob1)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob4
+box_name: ENV_PREFIX_FirstCalcBox
+job_type: c
+machine: ENV_PREFIX_host1
+command: <some command>
+profile: /etc/autosys.profile
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_CachePositions) and s(ENV_PREFIX_CalcJob3)
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob4.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob4.log"
+owner: APP_USER
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob5
+box_name: ENV_PREFIX_FirstCalcBox
+job_type: c
+machine: ENV_PREFIX_host1
+command: <some command>
+profile: /etc/autosys.profile
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_CalcJob4)
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob5.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob5.log"
+owner: APP_USER
+timezone: "GMT"
+
+
+/***********************************************************************************************************************
+ * SecondCalcBox
+***********************************************************************************************************************/
+
+/*
+ * Run System2 Pos
+ */
+insert_job: ENV_PREFIX_CalcJob6
+job_type: c
+box_name: ENV_PREFIX_SecondCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+ max_run_alarm: 45
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob6.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob6.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob3) and s(ENV_PREFIX_FeedJob11)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob7
+job_type: c
+box_name: ENV_PREFIX_SecondCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 45
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob7.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob7.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob3)
+timezone: "GMT"
+
+
+insert_job: ENV_PREFIX_CalcJob8
+job_type: c
+box_name: ENV_PREFIX_SecondCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 30
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob8.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob8.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob7) AND s(ENV_PREFIX_CalcJob6)
+timezone: "GMT"
+
+/*
+ * Run RA import
+ */
+insert_job: ENV_PREFIX_CalcJob9
+job_type: c
+box_name: ENV_PREFIX_SecondCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 300
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob9.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob9.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob8)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob10
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_SecondCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 30
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob10.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob10.log"
+condition: s(ENV_PREFIX_CalcJob9)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob11
+job_type: c
+box_name: ENV_PREFIX_SecondCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 30
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob11.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob11.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob10) and s(ENV_PREFIX_FeedJob10)
+timezone: "GMT"
+
+/*
+ * Recalculate COP exposures
+ */
+insert_job: ENV_PREFIX_CalcJob12
+job_type: c
+box_name: ENV_PREFIX_SecondCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 30
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob12.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob12.log"
+owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob10) and s(ENV_PREFIX_FeedJob10)
+timezone: "GMT"
+
+
+/***********************************************************************************************************************
+ * ThirdCalcBox
+***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_CalcJob13
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_ThirdCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob13.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob13.log"
+condition: s(ENV_PREFIX_CalcJob1)
+timezone: "GMT"
+
+
+insert_job: ENV_PREFIX_CalcJob14
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_ThirdCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob14.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob14.log"
+condition: s(ENV_PREFIX_CalcJob13)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob15
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_ThirdCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob15.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob15.log"
+condition: s(ENV_PREFIX_CalcJob14)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob16
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_ThirdCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob16.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob16.log"
+condition: s(ENV_PREFIX_CalcJob15)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob17
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_ThirdCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob17.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob17.log"
+condition: s(ENV_PREFIX_CalcJob15)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob18
+job_type: c
+owner: APP_USER
+box_name: ENV_PREFIX_ThirdCalcBox
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob18.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob18.log"
+condition: s(ENV_PREFIX_CalcJob15)
+timezone: "GMT"
+
+
+ /***********************************************************************************************************************
+ * SaturdayBox
+ ***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_SaturdayJob1
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SaturdayBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_SaturdayJob1.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_SaturdayJob1.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_SaturdayJob2
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SaturdayBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_SaturdayJob1)
+std_err_file: "/logs/autosys/ENV_PREFIX_SaturdayJob2.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_SaturdayJob2.log"
+owner: APP_USER
+
+ 
+/***********************************************************************************************************************
+ * SundayBox
+***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_stopAll
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "01:03"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_stopAll.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_stopAll.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess1
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "01:45"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess1.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess1.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess2
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "01:47"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess2.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess2.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess3
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "01:49"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess3.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess3.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess4
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "01:51"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess4.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess4.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess5
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "02:01"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess5.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess5.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess6
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess6.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess6.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess7
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_StartProcess6)
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess7.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess7.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess8
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_StartProcess7)
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess8.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess8.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StartProcess9
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_SundayBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_StartProcess8)
+std_err_file: "/logs/autosys/ENV_PREFIX_StartProcess9.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StartProcess9.log"
+owner: APP_USER
+
+/***********************************************************************************************************************
+ * EveningBox
+***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_EveningJob1
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_EveningBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_EveningJob1.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_EveningJob1.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_EveningJob2
+machine: ENV_PREFIX_host1
+box_name: ENV_PREFIX_EveningBox
+command: <some command>
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_EveningJob2.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_EveningJob2.log"
+owner: APP_USER
+
+/***********************************************************************************************************************
+ * Standalone jobs
+***********************************************************************************************************************/
+
+insert_job: ENV_PREFIX_StandaloneJob1
+machine: ENV_PREFIX_host1
+job_type: c
+owner: APP_USER
+command: <some command>
+permission: gx, mx
+alarm_if_fail: 1
+max_run_alarm: 5
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob1.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob1.log"
+condition: s(OTHER_ENV_PREFIX_ExternalJob)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_StandaloneJob2
+machine: ENV_PREFIX_host1
+job_type: c
+owner: APP_USER
+command: <some command>
+permission: gx, mx
+alarm_if_fail: 1
+date_conditions: y
+days_of_week:  mo, tu, we, th, fr, sa
+start_times: "00:00"
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob2.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob2.log"
+condition: s(OTHER_ENV_PREFIX_AnotherExternalJob) and s(ENV_PREFIX_StandaloneJob1)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_StandaloneJob3
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su, mo, tu, we, th, fr
+start_times: "07:45, 11:45, 15:45, 20:45"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob3.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob3.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob4
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "23:00"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob4.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob4.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob5
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "01:46"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob5.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob5.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob6
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "01:47"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob6.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob6.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob7
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: mo, tu, we, th, fr, sa
+start_times: "00:35"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob7.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob7.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob8
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: mo, tu, we, th, fr, sa
+start_times: "00:50"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob8.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob8.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob9
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: mo, tu, we, th, fr, sa
+start_times: "02:15"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob9.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob9.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob10
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "16:00"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob10.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob10.log"
+owner: APP_USER
+
+ insert_job: ENV_PREFIX_StandaloneJob11
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "14:00"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_FirstCalcBox)
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob11.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob11.log"
+owner: APP_USER
+
+insert_job: ENV_PREFIX_StandaloneJob12
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su, mo, tu, we, th, fr
+start_times: "23:30"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+n_retrys: 20
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob12.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob12.log"
+owner: APP_USER
+
+
+insert_job: ENV_PREFIX_StandaloneJob13
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su, mo, tu, we, th, fr
+start_times: "20:00"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob13.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob13.log"
+owner: APP_USER
+
+
+insert_job: ENV_PREFIX_StandaloneJob14
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: su
+start_times: "15:00"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob14.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob14.log"
+condition: s(ENV_PREFIX_ThirdCalcBox) AND s(ENV_PREFIX_FirstCalcBox)
+owner: APP_USER
+
+
+insert_job: ENV_PREFIX_StandaloneJob15
+job_type: c
+owner: APP_USER
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob15.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob15.log"
+condition: s(ENV_PREFIX_StandaloneJob14)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_StandaloneJob16
+job_type: c
+owner: APP_USER
+command: <some command>
+machine: ENV_PREFIX_host1
+permission: gx, mx
+alarm_if_fail: 1
+profile: /etc/autosys.profile
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob16.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob16.log"
+condition: s(ENV_PREFIX_StandaloneJob15)
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_StandaloneJob17
+machine: ENV_PREFIX_host1
+command: <some command>
+date_conditions: y
+days_of_week: mo
+start_times: "06:15"
+job_type: c
+profile: /etc/autosys.profile
+timezone: "GMT"
+alarm_if_fail: 1
+permission: gx, mx
+std_err_file: "/logs/autosys/ENV_PREFIX_StandaloneJob17.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_StandaloneJob17.log"
+owner: APP_USER
+
