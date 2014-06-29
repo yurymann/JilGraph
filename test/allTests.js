@@ -352,7 +352,7 @@ AllTests.prototype.addJobTest = function( assert, jobType, divClass ) {
     
     assert.equal(div.id, builder.idPrefix + job.name);
     assert.equal(div.className, divClass);
-    assert.equal(div.innerText, job.name);
+    assert.equal(div.innerHTML, job.name);
     assert.equal(div.parentElement.id, "graphContainer1");
 };
 
