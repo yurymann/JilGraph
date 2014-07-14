@@ -35,12 +35,28 @@ body {
     padding-right: 0.5em !important;
 }
 
-.btlabel_workday {
-    color: #0404B4 !important;
+.btlabel_workday.ui-state-default {
+    color: #0404B4;
 }
 
-.btlabel_weekend {
-    color: #8A0808 !important;
+.btlabel_workday.ui-state-active {
+	color: #EB8F00;
+}
+
+.btlabel_workday.ui-state-hover {
+	color: #C77405;
+}
+
+.btlabel_weekend.ui-state-default {
+    color: #8A0808;
+}
+
+.btlabel_weekend.ui-state-active {
+	color: #EB8F00;
+}
+
+.btlabel_weekend.ui-state-hover {
+	color: #C77405;
 }
 
 .generic-job {
