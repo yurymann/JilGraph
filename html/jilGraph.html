@@ -41,24 +41,24 @@
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        showErrorText(errorThrown);
+                        showErrorText("ERROR when loading Jil file: " + errorThrown);
                     }
                 });
             } catch (e) {
-                showError(e);
+            	showException(e);
             }
         });
         
-        function getErrorText(errorObj) {
+        function showException(e) {
+        	showErrorText(getExceptionText(e));
+        }
+        
+        function getExceptionText(errorObj) {
             return "ERROR: " + errorObj.name + "<br>" 
                 + "Message: " + errorObj.message + "<br>" 
                 + "File: " + errorObj.fileName + "<br>" 
                 + "Line: " + errorObj.lineNumber + "<br>" 
                 + errorObj.stack;
-        }
-        
-        function showError(e) {
-            getErrorText(e);
         }
         
         function showErrorText(text) {
