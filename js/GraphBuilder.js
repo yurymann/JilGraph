@@ -1,5 +1,14 @@
 "use strict";
 
+function htmlEncode(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+};
+
 // parent: top-level DOM object for the graph
 function GraphBuilder(jilArray, topContainer) {
     this.topContainer = topContainer;
@@ -177,7 +186,7 @@ GraphBuilder.prototype._getTooltipContent = function(job) {
 			if (result) {
 				result = result + "<br>";
 			};
-			result = result + "<b>" + prop + ":</b> " + thisBuilder.htmlEncode(propVal);
+			result = result + "<b>" + prop + ":</b> " + htmlEncode(propVal);
 		}
 	});
 	return result;
@@ -392,15 +401,6 @@ GraphBuilder.prototype.refreshDivInOutClass = function() {
 			$(mapItem.div).addClass(mapItem.className);
 		}
 	});
-};
-
-GraphBuilder.prototype.htmlEncode = function(str) {
-    return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
 };
 
 // null or empty string or "any" mean any day of week

@@ -20,9 +20,12 @@
         
         $( document ).ready(function() {
             try {
-                var iFileName = 2; // index of the capture group of in the regex
+            	var iFileName = 2; // index of the capture group of in the regex
                 var match = /(\?|&)jil=([^&]*)/.exec(decodeURIComponent(document.location.search));
                 var sourceJilFile = (match) ? match[iFileName] : null;
+                if (!sourceJilFile) {
+                	throw "Specify Jil file in the URL: " + window.location.href + "?jil=<PATH TO JIL FILE>";
+                }
                 $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
                 $("#title").text(sourceJilFile);
                 $.ajax({
@@ -41,29 +44,33 @@
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        showErrorText("ERROR when loading Jil file: " + errorThrown);
+                        showError("Cannot load Jil file: " + errorThrown);
                     }
                 });
             } catch (e) {
-            	showException(e);
+            	showError(e);
             }
         });
         
-        function showException(e) {
-        	showErrorText(getExceptionText(e));
+        function showError(e) {
+        	if (e.stack) { // Contains exception details
+        	    showErrorText(getExceptionText(e));
+        	} else { // Assuming e is just a message string
+        		showErrorText("ERROR: " + htmlEncode(e));
+        	}
         }
         
         function getExceptionText(errorObj) {
-            return "ERROR: " + errorObj.name + "<br>" 
-                + "Message: " + errorObj.message + "<br>" 
-                + "File: " + errorObj.fileName + "<br>" 
-                + "Line: " + errorObj.lineNumber + "<br>" 
+            return "ERROR: " + errorObj.name + "\n" 
+                + "Message: " + htmlEncode(errorObj.message) + "\n" 
+                + "File: " + errorObj.fileName + "\n" 
+                + "Line: " + errorObj.lineNumber + "\n" 
                 + errorObj.stack;
         }
         
         function showErrorText(text) {
             window.onload = function() { window.scrollTo(0, 0); };
-            $("#errorPane").append(text + "<hr>").css("color", "red");
+            $("#errorPane").append("<pre>" + text + "</pre><hr/>").css("color", "red");
             $('body').animate({scrollTop: $("#errorPane").offset().top }, 1);
         }
 </script>
