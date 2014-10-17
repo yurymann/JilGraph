@@ -24,11 +24,20 @@ body {
 
 .title {
     font: Monaco;
-    font-size: 1.25em;
+    font-size: 1.5em;
     color: blue;
-    padding-bottom: 0.125em;
+    padding: 0.25em;
 }
 
+.logo {
+    font: Monaco;
+    font-size: 1.5em;
+    font-style: italic;
+    float: right;
+    color: blue;
+    padding: 0.25em;
+    padding-right: 1em;
+}
 .ui-button-text {
     padding: 0.25em !important;
     padding-left: 0.5em !important;
