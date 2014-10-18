@@ -476,7 +476,7 @@ owner: APP_USER
 condition: s(ENV_PREFIX_CalcJob1)
 timezone: "GMT"
 
-insert_job: ENV_PREFIX_CachePositions
+insert_job: ENV_PREFIX_CalcJob3
 job_type: c
 box_name: ENV_PREFIX_FirstCalcBox
 command: <some command>
@@ -485,13 +485,13 @@ permission: gx, mx
 alarm_if_fail: 1
 max_run_alarm: 45
 profile: /etc/autosys.profile
-std_err_file: "/logs/autosys/ENV_PREFIX_CachePositions.log"
-std_out_file: "/logs/autosys/ENV_PREFIX_CachePositions.log"
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob3.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob3.log"
 owner: APP_USER
 condition: s(ENV_PREFIX_CalcJob2)
 timezone: "GMT"
 
-insert_job: ENV_PREFIX_CalcJob3
+insert_job: ENV_PREFIX_CalcJob4
 job_type: c
 box_name: ENV_PREFIX_FirstCalcBox
 command: <some command>
@@ -500,24 +500,10 @@ permission: gx, mx
 alarm_if_fail: 1
 max_run_alarm: 15
 profile: /etc/autosys.profile
-std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob3.log"
-std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob3.log"
-owner: APP_USER
-condition: s(ENV_PREFIX_CalcJob1)
-timezone: "GMT"
-
-insert_job: ENV_PREFIX_CalcJob4
-box_name: ENV_PREFIX_FirstCalcBox
-job_type: c
-machine: ENV_PREFIX_host1
-command: <some command>
-profile: /etc/autosys.profile
-alarm_if_fail: 1
-permission: gx, mx
-condition: s(ENV_PREFIX_CachePositions) and s(ENV_PREFIX_CalcJob3)
 std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob4.log"
 std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob4.log"
 owner: APP_USER
+condition: s(ENV_PREFIX_CalcJob1)
 timezone: "GMT"
 
 insert_job: ENV_PREFIX_CalcJob5
@@ -528,9 +514,23 @@ command: <some command>
 profile: /etc/autosys.profile
 alarm_if_fail: 1
 permission: gx, mx
-condition: s(ENV_PREFIX_CalcJob4)
+condition: s(ENV_PREFIX_CalcJob3) and s(ENV_PREFIX_CalcJob4)
 std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob5.log"
 std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob5.log"
+owner: APP_USER
+timezone: "GMT"
+
+insert_job: ENV_PREFIX_CalcJob6
+box_name: ENV_PREFIX_FirstCalcBox
+job_type: c
+machine: ENV_PREFIX_host1
+command: <some command>
+profile: /etc/autosys.profile
+alarm_if_fail: 1
+permission: gx, mx
+condition: s(ENV_PREFIX_CalcJob5)
+std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob6.log"
+std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob6.log"
 owner: APP_USER
 timezone: "GMT"
 
@@ -554,7 +554,7 @@ profile: /etc/autosys.profile
 std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob6.log"
 std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob6.log"
 owner: APP_USER
-condition: s(ENV_PREFIX_CalcJob3) and s(ENV_PREFIX_FeedJob11)
+condition: s(ENV_PREFIX_CalcJob4) and s(ENV_PREFIX_FeedJob11)
 timezone: "GMT"
 
 insert_job: ENV_PREFIX_CalcJob7
@@ -569,7 +569,7 @@ profile: /etc/autosys.profile
 std_err_file: "/logs/autosys/ENV_PREFIX_CalcJob7.log"
 std_out_file: "/logs/autosys/ENV_PREFIX_CalcJob7.log"
 owner: APP_USER
-condition: s(ENV_PREFIX_CalcJob3)
+condition: s(ENV_PREFIX_CalcJob4)
 timezone: "GMT"
 
 

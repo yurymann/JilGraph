@@ -12,26 +12,36 @@ body {
     background: white;
     top: 0;
     left: 0;
-    padding: 5px;
-    padding-bottom: 8px;
+    padding-left: 1em;
+    padding-top: 0.3em;
+    padding-bottom: 0.5em;
     width: 100%;
     z-index: 200;
 }
 
 #content {
-    padding-top: 57px;
+    padding-top: 3em;
 }
 
 .title {
     font: Monaco;
-    font-size: 1.5em;
+    font-size: 1.2em;
     color: blue;
     padding: 0.25em;
 }
 
+.titleDiv {
+    padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+.full-width-table {
+	width: 100%;
+}
+
 .logo {
     font: Monaco;
-    font-size: 1.5em;
+    font-size: 1.2em;
     font-style: italic;
     float: right;
     color: blue;

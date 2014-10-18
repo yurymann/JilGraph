@@ -26,8 +26,9 @@
                 if (!sourceJilFile) {
                 	throw "Specify Jil file in the URL: " + window.location.href + "?jil=<PATH TO JIL FILE>";
                 }
-                $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
+//                $("#title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
                 $("#title").text(sourceJilFile);
+                $("#title-ref").attr("href", sourceJilFile);
                 $.ajax({
                     url: sourceJilFile,
                     dataType: "text",
@@ -77,10 +78,11 @@
 </head>
 <body>
 	<div id="topBar">
-	    <span>
-	       <span id="title" class="title"></span>
+ 	    <div class="titleDiv">
+           <a id="title-ref" href=""><span id="title" class="title"></span></a>
+<!--       <span id="logo" class="logo"><a href="aaa">JilGraph Home</a></span> -->
            <span id="logo" class="logo">JilGraph</span>
-	    </span>
+	    </div>
 	    <div id="daysOfWeek" class="no-text-selection">
 	        <input type="radio" id="day_any" name="daysOfWeek" checked="checked"><label for="day_any">ANY</label>
 	        <input type="radio" id="day_mo" name="daysOfWeek"><label for="day_mo" class="btlabel_workday">Monday</label>
