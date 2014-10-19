@@ -644,3 +644,33 @@ AllTests.prototype.testGraphBuilder_draw = function(assert) {
     expect(0);
 };
 
+//------------------------------
+
+AllTests.prototype.testGetDecodedURIParameter_empty = function(assert) {
+	var uri = ""; 
+	assert.equal(getDecodedURIParameter(uri, "p1"), null);
+};
+
+AllTests.prototype.testGetDecodedURIParameter_1param = function(assert) {
+	var uri = "?p1=value1"; 
+	assert.equal(getDecodedURIParameter(uri, "p1"), "value1");
+};
+
+AllTests.prototype.testGetDecodedURIParameter_1param_2ndPlace = function(assert) {
+	var uri = "?p0=value0&p1=value1"; 
+	assert.equal(getDecodedURIParameter(uri, "p1"), "value1");
+};
+
+AllTests.prototype.testGetDecodedURIParameter_2values = function(assert) {
+	var uri = "?p1=value1&p1=another_value"; 
+    assert.throws(function() {
+    	assert.equal(getDecodedURIParameter(uri, "p1"), "value1");
+    }, 
+    Error,
+    "Parameter 'p1' occurs more than once in the URI parameters: ?p1=value1&p1=another_value");
+};
+
+AllTests.prototype.testGetDecodedURIParameter_specSymbols = function(assert) {
+	var uri = "?p1=1%20%26%202"; 
+	assert.equal(getDecodedURIParameter(uri, "p1"), "1 & 2");
+};

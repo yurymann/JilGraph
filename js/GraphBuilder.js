@@ -9,6 +9,22 @@ function htmlEncode(str) {
             .replace(/>/g, '&gt;');
 };
 
+// Finds a URI parameter prefixed by "<paramName>=".
+// uri - a value returned by document.location.search (starts with "?" if there are any parameters)
+// See unti test for clarification. 
+function getDecodedURIParameter(uri, paramName) {
+	var re = new RegExp("(\\?|&)" + paramName + "=([^&]*)", "g");
+	var matches = re.exec(uri);
+	if (matches == null) {
+		return null;
+	}
+	
+	if (re.exec(uri) != null) { // more matches
+		throw new Error("Parameter '" + paramName + "' occurs more than once in the URI parameters: " + uri);
+	}
+	return decodeURIComponent(matches[2]);
+}
+
 // parent: top-level DOM object for the graph
 function GraphBuilder(jilArray, topContainer) {
     this.topContainer = topContainer;
