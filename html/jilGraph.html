@@ -20,15 +20,19 @@
         
         $( document ).ready(function() {
             try {
-            	var iFileName = 2; // index of the capture group of in the regex
-                var match = /(\?|&)jil=([^&]*)/.exec(decodeURIComponent(document.location.search));
-                var sourceJilFile = (match) ? match[iFileName] : null;
+                var sourceJilFile = getDecodedURIParameter(document.location.search, "jil");
                 if (!sourceJilFile) {
                 	throw "Specify Jil file in the URL: " + window.location.href + "?jil=<PATH TO JIL FILE>";
                 }
-//                $("#title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
+                $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
                 $("#title").text(sourceJilFile);
                 $("#title-ref").attr("href", sourceJilFile);
+
+                var homeURI = getDecodedURIParameter(document.location.search, "home");
+                if (homeURI) {
+                	$("#home-ref").attr("href", homeURI)
+                }
+                
                 $.ajax({
                     url: sourceJilFile,
                     dataType: "text",
@@ -78,10 +82,13 @@
 </head>
 <body>
 	<div id="topBar">
- 	    <div class="titleDiv">
+        <div class="titleDiv">
            <a id="title-ref" href=""><span id="title" class="title"></span></a>
 <!--       <span id="logo" class="logo"><a href="aaa">JilGraph Home</a></span> -->
-           <span id="logo" class="logo">JilGraph</span>
+           <a id="home-ref" href="">
+                <span id="logo" class="logo">JilGraph Home</span>
+           </a>
+            
 	    </div>
 	    <div id="daysOfWeek" class="no-text-selection">
 	        <input type="radio" id="day_any" name="daysOfWeek" checked="checked"><label for="day_any">ANY</label>
@@ -98,8 +105,7 @@
 	    <div id="errorPane" class="error"></div>
 	    <div id="graphContainer"></div>
 	</div>
-	<code id="sourceJil" style="display:none">
-	</code>
+    <code id="sourceJil" style="display:none"></code>
 	
     <div align="right">
 	    <hr size="1"/>

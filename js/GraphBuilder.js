@@ -15,7 +15,7 @@ function htmlEncode(str) {
 function getDecodedURIParameter(uri, paramName) {
 	var re = new RegExp("(\\?|&)" + paramName + "=([^&]*)", "g");
 	var matches = re.exec(uri);
-	if (matches == null) {
+	if (!matches) {
 		return null;
 	}
 	
