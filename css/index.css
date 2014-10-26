@@ -1,0 +1,11 @@
+body {
+    font-family: arial, sans-serif;
+    max-width: 40em;
+    margin: auto;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+content {
+	text-align: center;
+}

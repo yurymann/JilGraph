@@ -6,17 +6,24 @@ body {
     font-size: 100%;
     padding-bottom: 50px;
 }
+
+h1 {
+	float: left;
+	margin-top: 0.25em;
+}
     
+.header {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
 .fixed-header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-/*     width: 100%; */
-    padding-top: 0.125em;
-    padding-bottom: 0.5em;
-    padding-left: 1em;
-    padding-right: 1em;
     /* The following properties prevent jsPlumb from drawing over the header while scrolling */ 
     background: white;
     z-index: 10000;
@@ -35,6 +42,26 @@ body {
     clear: both;
     float: left;
     padding-top: 0.5em;
+}
+
+.button {
+    display: inline-block;
+    max-width: 15em;
+    background: #72b352;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-family:Verdana;
+    font-size:22px;
+    padding: 5px 12px;
+    margin-top: 0.5em;
+    text-decoration:none;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button:hover {
+    text-decoration:underline;
 }
 
 .content {

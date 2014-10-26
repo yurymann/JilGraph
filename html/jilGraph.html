@@ -32,6 +32,7 @@
                 if (homeURI) {
                     $("#home-ref").attr("href", homeURI)
                 }
+                $("#refresh-ref").attr("href", location.href)
                 
                 $.ajax({
                     url: sourceJilFile,
@@ -44,7 +45,7 @@
                             $("#daysOfWeek").buttonset().show();
                             $(".fixed-header").show();
                             $(".content").css({
-                                "margin-top": $(".fixed-header").outerHeight() + "px"
+                                "margin-top": ($(".fixed-header").outerHeight() + 12) + "px"
                             });                            
                             builder.draw();
                             $("#daysOfWeek :radio").click(function(e) { builder.setDayOfWeek(this.id.replace(/^day_/, "")); } );
@@ -86,12 +87,13 @@
 </script>
 </head>
 <body>
-    <div class="fixed-header hidden-while-loading">
-           <a id="title-ref" href=""><span id="title" class="title"></span></a>
-    <div id="toolbar" class="toolbar">
-        <a id="home-ref" href="">Home</a>
-        <a href="help.html">Help</a>
-    </div>    
+    <div class="header fixed-header hidden-while-loading">
+        <a id="title-ref" href=""><span id="title" class="title"></span></a>
+        <div class="toolbar">
+            <a id="refresh-ref" href="refresh">Refresh</a>
+            <a id="home-ref" href="">Home</a>
+            <a href="help.html">Help</a>
+        </div>    
         <div id="daysOfWeek" class="days-of-week no-text-selection">
             <input type="radio" id="day_any" name="daysOfWeek" checked="checked"><label for="day_any">ANY</label>
             <input type="radio" id="day_mo" name="daysOfWeek"><label for="day_mo" class="btlabel_workday">Monday</label>
