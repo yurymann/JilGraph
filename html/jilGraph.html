@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <head>
     <meta http-equiv="x-ua-compatible" content="IE=Edge"/> 
-	<meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Loading...</title>
-	<script type="text/javascript" src="../jslib/jquery-ui-1.11.0/external/jquery/jquery.js"></script>
-	<script type="text/javascript" src="../jslib/jquery-ui-1.11.0/jquery-ui.js"></script>
+    <script type="text/javascript" src="../jslib/jquery-ui-1.11.0/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="../jslib/jquery-ui-1.11.0/jquery-ui.js"></script>
     <link rel="stylesheet" href="../jslib/jquery-ui-1.11.0/jquery-ui.css">
     <script type="text/javascript" src="../jslib/jquery.jsPlumb-1.5.5-min.js"></script>
 
-	<script type="text/javascript" src="../js/JilParser.js"></script>
+    <script type="text/javascript" src="../js/JilParser.js"></script>
     <script type="text/javascript" src="../js/JilConnection.js"></script>
     <script type="text/javascript" src="../js/GraphBuilder.js"></script>
     <link rel="stylesheet" href="../css/jilGraph.css">
@@ -22,7 +22,7 @@
             try {
                 var sourceJilFile = getDecodedURIParameter(document.location.search, "jil");
                 if (!sourceJilFile) {
-                	throw "Specify Jil file in the URL: " + window.location.href + "?jil=<PATH TO JIL FILE>";
+                    throw "Specify Jil file in the URL: " + window.location.href + "?jil=<PATH TO JIL FILE>";
                 }
                 $("title").text(sourceJilFile.replace(/^.*[\\\/]/, ''));
                 $("#title").text(sourceJilFile);
@@ -30,7 +30,7 @@
 
                 var homeURI = getDecodedURIParameter(document.location.search, "home");
                 if (homeURI) {
-                	$("#home-ref").attr("href", homeURI)
+                    $("#home-ref").attr("href", homeURI)
                 }
                 
                 $.ajax({
@@ -40,7 +40,12 @@
                         try {
                             var parser = new JilParser();
                             var builder = new GraphBuilder(parser.parse(data), $("#graphContainer"));
+                            
                             $("#daysOfWeek").buttonset().show();
+                            $(".fixed-header").show();
+                            $(".content").css({
+                                "margin-top": $(".fixed-header").outerHeight() + "px"
+                            });                            
                             builder.draw();
                             $("#daysOfWeek :radio").click(function(e) { builder.setDayOfWeek(this.id.replace(/^day_/, "")); } );
                             $(document).tooltip();
@@ -53,16 +58,16 @@
                     }
                 });
             } catch (e) {
-            	showError(e);
+                showError(e);
             }
         });
         
         function showError(e) {
-        	if (e.stack) { // Contains exception details
-        	    showErrorText(getExceptionText(e));
-        	} else { // Assuming e is just a message string
-        		showErrorText("ERROR: " + htmlEncode(e));
-        	}
+            if (e.stack) { // Contains exception details
+                showErrorText(getExceptionText(e));
+            } else { // Assuming e is just a message string
+                showErrorText("ERROR: " + htmlEncode(e));
+            }
         }
         
         function getExceptionText(errorObj) {
@@ -81,34 +86,31 @@
 </script>
 </head>
 <body>
-	<div id="topBar">
-        <div class="titleDiv">
+    <div class="fixed-header hidden-while-loading">
            <a id="title-ref" href=""><span id="title" class="title"></span></a>
-<!--       <span id="logo" class="logo"><a href="aaa">JilGraph Home</a></span> -->
-           <a id="home-ref" href="">
-                <span id="logo" class="logo">JilGraph Home</span>
-           </a>
-            
-	    </div>
-	    <div id="daysOfWeek" class="no-text-selection">
-	        <input type="radio" id="day_any" name="daysOfWeek" checked="checked"><label for="day_any">ANY</label>
-	        <input type="radio" id="day_mo" name="daysOfWeek"><label for="day_mo" class="btlabel_workday">Monday</label>
-	        <input type="radio" id="day_tu" name="daysOfWeek"><label for="day_tu" class="btlabel_workday">Tuesday</label>
-	        <input type="radio" id="day_we" name="daysOfWeek"><label for="day_we" class="btlabel_workday">Wednesday</label>
-	        <input type="radio" id="day_th" name="daysOfWeek"><label for="day_th" class="btlabel_workday">Thursday</label>
-	        <input type="radio" id="day_fr" name="daysOfWeek"><label for="day_fr" class="btlabel_workday">Friday</label>
-	        <input type="radio" id="day_sa" name="daysOfWeek"><label for="day_sa" class="btlabel_weekend">Saturday</label>
-	        <input type="radio" id="day_su" name="daysOfWeek"><label for="day_su" class="btlabel_weekend">Sunday</label>
-	    </div>
-	</div>
-	<div id="content">
-	    <div id="errorPane" class="error"></div>
-	    <div id="graphContainer"></div>
-	</div>
+    <div id="toolbar" class="toolbar">
+        <a id="home-ref" href="">Home</a>
+        <a href="help.html">Help</a>
+    </div>    
+        <div id="daysOfWeek" class="days-of-week no-text-selection">
+            <input type="radio" id="day_any" name="daysOfWeek" checked="checked"><label for="day_any">ANY</label>
+            <input type="radio" id="day_mo" name="daysOfWeek"><label for="day_mo" class="btlabel_workday">Monday</label>
+            <input type="radio" id="day_tu" name="daysOfWeek"><label for="day_tu" class="btlabel_workday">Tuesday</label>
+            <input type="radio" id="day_we" name="daysOfWeek"><label for="day_we" class="btlabel_workday">Wednesday</label>
+            <input type="radio" id="day_th" name="daysOfWeek"><label for="day_th" class="btlabel_workday">Thursday</label>
+            <input type="radio" id="day_fr" name="daysOfWeek"><label for="day_fr" class="btlabel_workday">Friday</label>
+            <input type="radio" id="day_sa" name="daysOfWeek"><label for="day_sa" class="btlabel_weekend">Saturday</label>
+            <input type="radio" id="day_su" name="daysOfWeek"><label for="day_su" class="btlabel_weekend">Sunday</label>
+        </div>
+    </div>
+    <div class="content">
+        <div id="errorPane" class="error"></div>
+        <div id="graphContainer"></div>
+    </div>
     <code id="sourceJil" style="display:none"></code>
-	
+    
     <div align="right">
-	    <hr size="1"/>
-	    <a href="https://github.com/yurymann/JilGraph">JilGraph project on GitHub</a>
+        <hr size="1"/>
+        <a href="https://github.com/yurymann/JilGraph">JilGraph project on GitHub</a>
     </div>
 </body>

@@ -1,0 +1,17 @@
+body{
+	font-family: arial,sans-serif;
+	max-width: 40em;
+	margin: auto;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+pre{
+	font-size: small;
+    /* Wrap text */
+    white-space: pre-wrap;       /* CSS 3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}

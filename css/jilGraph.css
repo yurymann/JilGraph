@@ -7,25 +7,43 @@ body {
     padding-bottom: 50px;
 }
     
-#topBar {
+.fixed-header {
     position: fixed;
-    background: white;
     top: 0;
     left: 0;
-    padding-left: 1em;
-    padding-top: 0.3em;
+    right: 0;
+/*     width: 100%; */
+    padding-top: 0.125em;
     padding-bottom: 0.5em;
-    width: 100%;
-    z-index: 200;
+    padding-left: 1em;
+    padding-right: 1em;
+    /* The following properties prevent jsPlumb from drawing over the header while scrolling */ 
+    background: white;
+    z-index: 10000;
 }
 
-#content {
-    padding-top: 5em;
+.hidden-while-loading {
+	display: none;
+}
+
+.toolbar {
+	float: right;
+    font-size: 1.125em;
+}
+
+.days-of-week {
+    clear: both;
+    float: left;
+    padding-top: 0.5em;
+}
+
+.content {
+    clear: both;
 }
 
 .title {
     font: Monaco;
-    font-size: 1.2em;
+    font-size: 1.25em;
     color: blue;
     padding: 0.25em;
 }
@@ -46,7 +64,7 @@ body {
     float: right;
     color: blue;
     padding: 0.25em;
-    padding-right: 1em;
+    padding-right: 0.5em;
 }
 .ui-button-text {
     padding: 0.25em !important;

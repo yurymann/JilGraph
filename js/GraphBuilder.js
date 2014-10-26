@@ -195,7 +195,6 @@ GraphBuilder.prototype._addJobDiv = function(job, parentDiv) {
 
 GraphBuilder.prototype._getTooltipContent = function(job) {
 	var result = "";
-	var thisBuilder = this;
 	$.each(this.visibleProps, function(i, prop) {
 		var propVal = job[prop]; 
 		if (propVal) {
