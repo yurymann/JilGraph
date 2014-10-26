@@ -185,6 +185,40 @@ AllTests.prototype.testJilParser_parse = function(assert) {
     assert.deepEqual(this.jilParser.parse($("#testJil1").text()), expected);
 };
 
+AllTests.prototype.testJilParser_parse_missingJobType = function(assert) {
+    var jilArray = this.jilParser.parse($("#missingJobType").text());
+    assert.equal(jilArray[0].job_type, "c");
+};        
+
+AllTests.prototype.testJilParser_setDefaultJobProperties = function(assert) {
+    var job1 = {
+        "name": "job1",
+        "job_type": "c",
+    };
+    var job2 = {
+        "name": "job2",
+        "job_type": "b",
+    };
+    var job3 = {
+        "name": "job3",
+        "condition": "s(job1) & f(job4) & n(unknownJob)",
+    };
+
+    var jilArray = [ job1, job2, job3 ];
+
+    assert.equal(jilArray[0].job_type, "c");
+    assert.equal(jilArray[1].job_type, "b");
+    assert.equal(jilArray[2].job_type, undefined);
+    
+    this.jilParser._setDefaultJobProperties(jilArray);
+    
+    assert.equal(jilArray[0].job_type, "c");
+    assert.equal(jilArray[1].job_type, "b");
+    assert.equal(jilArray[2].job_type, "c");
+};
+
+
+
 AllTests.prototype.testJilParser_validateAfterParsing_circularDependencies = function(assert) {
     var jilArray1 = [
         { name: "job0", job_type: "c", conditionArray: [] },

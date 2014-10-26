@@ -50,6 +50,7 @@ JilParser.prototype.parse = function(jilText) {
         }
     }
     
+    this._setDefaultJobProperties(result);
     this._stripPrefix(result);
     this._setDependenciesAsReferences(result);
     this._setDaysOfWeek(result);
@@ -86,14 +87,23 @@ JilParser.prototype._unquote = function(s) {
 	return m ? m[1] : s;
 };
 
-//dayOfWeek: 2-letter string specifying any single day of week
-//If a job is within a box, then it is considered active only on the days when both
-//the job and the parent box are active.
+// dayOfWeek: 2-letter string specifying any single day of week
+// If a job is within a box, then it is considered active only on the days when both
+// the job and the parent box are active.
 JilParser.prototype._isJobActiveOnDayOfWeek = function(jilArray, job, dayOfWeek) {
 	return (!job.hasOwnProperty("days_of_weekArray") || job.days_of_weekArray[dayOfWeek]) 
 	&& (
 			!job.hasOwnProperty("box_name") || this._isJobActiveOnDayOfWeek(jilArray, this.findJob(jilArray, job.box_name), dayOfWeek)
 	);
+};
+
+// Set default values of attributes which were not supplied in the JIL file.
+JilParser.prototype._setDefaultJobProperties = function(jilArray) {
+    $.each(jilArray, function(i, job) {
+        if (!job.hasOwnProperty("job_type")) {
+            job.job_type = "c";
+        }
+    });
 };
 
 JilParser.prototype._stripPrefix = function(jilArray) {

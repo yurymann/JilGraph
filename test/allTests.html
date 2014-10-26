@@ -95,26 +95,10 @@ box_name: box1
 condition: s(job1_1) and s(externalJob)
     </code>
     <hr/>
-    <code id="quoteValuesResult">
-{
-"box1": {
-"job_type": "b",
-},
-"job1_2": {
-"job_type": "c",
-"command": "start \"\"",
-}}
-    </code>
-    <hr/>
-    <code id="test1">
-{
-"box1": {
-"job_type": "b",
-},
-"job1_2": {
-"job_type": "c",
-"command": "start \"\"",
-}}
+    <code id="missingJobType">
+insert_job: job1_1 
+box_name: box1
+command: start ""
     </code>
 	
 </body>
